@@ -1,0 +1,41 @@
+---
+import type { Faq } from '../../data/faqs';
+import Chevron from '../ui/Chevron.astro';
+
+/**
+ * Native `<details>` accordion. No JavaScript, no layout shift, and the
+ * questions stay in the document outline as real headings. The same array is
+ * passed to `faqPage()` for the structured data, so the two cannot drift.
+ */
+
+interface Props {
+  faqs: Faq[];
+  title?: string;
+  id?: string;
+}
+
+const { faqs, title = 'Common questions', id = 'faq' } = Astro.props;
+
+const summaryClass =
+  'flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 py-3 [&::-webkit-details-marker]:hidden';
+const chevronClass =
+  'size-5 shrink-0 text-ink-subtle transition-transform duration-150 group-open:-rotate-180';
+---
+
+<section {id} class="border-t border-hairline">
+  <div class="container-page py-10 sm:py-14">
+    <h2 class="text-display-md">{title}</h2>
+
+    <div class="mt-6 max-w-prose border-t border-hairline">
+      {faqs.map((faq) => (
+        <details class="group border-b border-hairline">
+          <summary class={summaryClass}>
+            <h3 class="text-body font-medium text-ink">{faq.question}</h3>
+            <Chevron class={chevronClass} />
+          </summary>
+          <p class="pb-4 text-body-sm text-ink-muted">{faq.answer}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

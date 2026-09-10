@@ -1,0 +1,41 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'section'> {
+  /** Rendered as the card heading when given. */
+  title?: string;
+  /** Small print under the heading. */
+  subtitle?: string;
+  /** Heading level, so cards never break the document outline. */
+  headingLevel?: 2 | 3 | 4;
+  /** Tighter padding for dense, nested cards. */
+  compact?: boolean;
+  as?: 'section' | 'div' | 'article';
+}
+
+const {
+  title,
+  subtitle,
+  headingLevel = 2,
+  compact = false,
+  as: Tag = 'section',
+  class: className,
+  ...rest
+} = Astro.props;
+
+const Heading = `h${headingLevel}` as 'h2' | 'h3' | 'h4';
+const headingSize = headingLevel === 2 ? 'text-headline' : 'text-card-title';
+---
+
+<Tag class:list={['panel', compact ? 'p-4' : 'p-5 sm:p-6', className]} {...rest}>
+  {(title || Astro.slots.has('header')) && (
+    <div class="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+      <div class="min-w-0">
+        {title && <Heading class={headingSize}>{title}</Heading>}
+        {subtitle && <p class="mt-1 text-body-sm text-ink-subtle">{subtitle}</p>}
+      </div>
+      <slot name="header" />
+    </div>
+  )}
+  <slot />
+</Tag>

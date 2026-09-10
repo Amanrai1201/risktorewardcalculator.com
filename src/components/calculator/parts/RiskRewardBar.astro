@@ -1,0 +1,35 @@
+---
+interface Props {
+  /** Risk as a share of risk + reward, 0–1. */
+  riskShare: number;
+}
+
+const { riskShare } = Astro.props;
+
+const riskPct = Math.round(Math.min(Math.max(riskShare, 0), 1) * 100);
+const rewardPct = 100 - riskPct;
+---
+
+<div>
+  <div
+    class="flex h-2.5 overflow-hidden rounded-full bg-surface-2"
+    aria-hidden="true"
+    data-bar-track
+  >
+    <div
+      class="bg-loss-bar transition-[width] duration-150 ease-out"
+      style={`width:${riskPct}%`}
+      data-bar="risk"
+    ></div>
+    <div
+      class="bg-gain-bar transition-[width] duration-150 ease-out"
+      style={`width:${rewardPct}%`}
+      data-bar="reward"
+    ></div>
+  </div>
+
+  <div class="mt-1.5 flex items-baseline justify-between text-caption">
+    <span class="text-loss">Risk</span>
+    <span class="text-gain">Reward</span>
+  </div>
+</div>

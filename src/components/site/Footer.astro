@@ -1,0 +1,74 @@
+---
+import { CALCULATORS } from '../../data/calculators';
+import { FOOTER_LINKS, SITE } from '../../data/site';
+import { RATES_VERIFIED_LABEL } from '../../lib/calc/charges';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-section border-t border-hairline bg-surface-1">
+  <div class="container-page py-10 sm:py-12">
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="lg:col-span-2">
+        <p class="text-card-title text-ink">{SITE.name}</p>
+        <p class="mt-2 max-w-prose text-body-sm text-ink-muted">
+          Free, client-side trading calculators. Nothing you type leaves your browser.
+        </p>
+      </div>
+
+      <nav aria-labelledby="footer-calculators">
+        <h2 id="footer-calculators" class="text-eyebrow uppercase text-ink-subtle">
+          Calculators
+        </h2>
+        <ul class="mt-3 space-y-1">
+          {CALCULATORS.map((calculator) => (
+            <li>
+              <a
+                href={calculator.href}
+                class="inline-flex min-h-9 items-center rounded-xs text-body-sm text-ink-muted underline decoration-hairline-strong underline-offset-4 transition-colors duration-150 hover:text-ink hover:decoration-ink-subtle"
+              >
+                {calculator.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <nav aria-labelledby="footer-more">
+        <h2 id="footer-more" class="text-eyebrow uppercase text-ink-subtle">
+          More
+        </h2>
+        <ul class="mt-3 space-y-1">
+          {FOOTER_LINKS.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="inline-flex min-h-9 items-center rounded-xs text-body-sm text-ink-muted underline decoration-hairline-strong underline-offset-4 transition-colors duration-150 hover:text-ink hover:decoration-ink-subtle"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+
+    <div class="mt-8 border-t border-hairline pt-6">
+      <p class="text-caption text-ink-subtle">
+        Charges and taxes are estimates based on published rate cards, last checked{' '}
+        {RATES_VERIFIED_LABEL}. Actual charges vary by broker, exchange, scrip and order count.
+        Nothing here is investment advice — see the{' '}
+        <a
+          href="/disclaimer/"
+          class="underline decoration-hairline-strong underline-offset-2 hover:text-ink-muted"
+        >
+          disclaimer
+        </a>
+        .
+      </p>
+      <p class="mt-2 text-caption text-ink-tertiary">
+        © {year} {SITE.domain}
+      </p>
+    </div>
+  </div>
+</footer>

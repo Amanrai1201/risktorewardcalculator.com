@@ -1,0 +1,99 @@
+---
+import type { ChargeResult, CurrencyCode } from '../../../lib/calc/types';
+import { formatMoney } from '../../../lib/format';
+import { equityChargeNote } from '../../../lib/notes';
+import Card from '../../ui/Card.astro';
+
+interface Props {
+  atTarget: ChargeResult;
+  atStop: ChargeResult;
+  currency: CurrencyCode;
+  /** Broker or venue the estimate is based on. */
+  sourceName: string;
+  sourceUrl?: string;
+  verifiedLabel: string;
+}
+
+const { atTarget, atStop, currency, sourceName, sourceUrl, verifiedLabel } = Astro.props;
+
+/**
+ * The same charges are priced twice — once at the target exit, once at the stop
+ * exit — because turnover differs between the two. Showing both side by side is
+ * the honest presentation: the winning round trip costs more than the losing one.
+ */
+const stopById = new Map(atStop.lines.map((line) => [line.id, line.amount]));
+const rows = atTarget.lines.map((line) => ({
+  ...line,
+  atStop: stopById.get(line.id) ?? 0,
+}));
+---
+
+<Card title="Estimated charges" subtitle="Both legs of the round trip, priced twice.">
+  <div class="-mx-1 overflow-x-auto">
+    <table class="w-full min-w-[22rem] border-collapse text-body-sm">
+      <caption class="sr-only">
+        Estimated brokerage, taxes and fees for the round trip, shown for the target exit and the
+        stop exit.
+      </caption>
+      <thead>
+        <tr class="border-b border-hairline">
+          <th scope="col" class="px-1 pb-2 text-left font-medium text-ink-subtle">
+            Charge
+          </th>
+          <th scope="col" class="px-1 pb-2 text-right font-medium text-ink-subtle">
+            If target hits
+          </th>
+          <th scope="col" class="px-1 pb-2 text-right font-medium text-ink-subtle">
+            If stop hits
+          </th>
+        </tr>
+      </thead>
+      <tbody data-charges-body>
+        {rows.map((row) => (
+          <tr class="border-b border-hairline last:border-0">
+            <th scope="row" class="px-1 py-2 text-left font-normal">
+              <span class="text-ink">{row.label}</span>
+              {row.note && <span class="block text-caption text-ink-subtle">{row.note}</span>}
+            </th>
+            <td class="figures px-1 py-2 text-right text-ink">
+              {formatMoney(row.amount, currency)}
+            </td>
+            <td class="figures px-1 py-2 text-right text-ink">
+              {formatMoney(row.atStop, currency)}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+      <tfoot>
+        <tr class="border-t-2 border-hairline-strong">
+          <th scope="row" class="px-1 pt-2 text-left font-semibold text-ink">
+            Total estimated charges
+          </th>
+          <td
+            class="figures px-1 pt-2 text-right font-semibold text-ink"
+            data-field="totalAtTarget"
+          >
+            {formatMoney(atTarget.total, currency)}
+          </td>
+          <td class="figures px-1 pt-2 text-right font-semibold text-ink" data-field="totalAtStop">
+            {formatMoney(atStop.total, currency)}
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <p class="mt-4 text-caption text-ink-subtle">
+    <span data-field="chargeSource">{equityChargeNote(sourceName, verifiedLabel)}</span>
+    <a
+      href={sourceUrl}
+      rel="nofollow noopener"
+      target="_blank"
+      class="whitespace-nowrap underline decoration-hairline-strong underline-offset-2 hover:text-ink-muted"
+      data-field="chargeSourceLink"
+      hidden={!sourceUrl}
+    >
+      Rate card
+    </a>
+  </p>
+</Card>

@@ -1,0 +1,72 @@
+---
+type Tone = 'neutral' | 'gain' | 'loss' | 'muted';
+
+interface Props {
+  label: string;
+  /** Rendered value. Server-rendered so the page is useful before JS runs. */
+  value: string;
+  /** Small print beneath the figure. */
+  hint?: string;
+  tone?: Tone;
+  size?: 'lg' | 'md' | 'sm';
+  /** `data-field` hook the controller writes into. */
+  field?: string;
+  /** `data-field` hook for the label, for figures whose unit changes with the market. */
+  labelField?: string;
+  /** `data-field` hook for the hint line. */
+  hintField?: string;
+  /** Washed background, for the one or two figures that lead the panel. */
+  emphasis?: boolean;
+  class?: string;
+}
+
+const {
+  label,
+  value,
+  hint,
+  tone = 'neutral',
+  size = 'md',
+  field,
+  labelField,
+  hintField,
+  emphasis = false,
+  class: className,
+} = Astro.props;
+
+const TONE_TEXT: Record<Tone, string> = {
+  neutral: 'text-ink',
+  gain: 'text-gain',
+  loss: 'text-loss',
+  muted: 'text-ink-muted',
+};
+
+const TONE_WASH: Record<Tone, string> = {
+  neutral: 'bg-surface-1',
+  gain: 'bg-gain-wash',
+  loss: 'bg-loss-wash',
+  muted: 'bg-surface-1',
+};
+
+const SIZE_TEXT = {
+  lg: 'text-figure-lg',
+  md: 'text-figure',
+  sm: 'text-figure-sm',
+};
+---
+
+<div class:list={['min-w-0', emphasis ? ['rounded-md p-3', TONE_WASH[tone]] : '', className]}>
+  <p class="text-caption text-ink-subtle" data-field={labelField}>
+    {label}
+  </p>
+  <p
+    class:list={['figures mt-0.5 break-words', SIZE_TEXT[size], TONE_TEXT[tone]]}
+    data-field={field}
+  >
+    {value}
+  </p>
+  {(hint || hintField) && (
+    <p class="mt-0.5 text-caption text-ink-subtle" data-field={hintField}>
+      {hint}
+    </p>
+  )}
+</div>

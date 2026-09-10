@@ -1,0 +1,92 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends Omit<HTMLAttributes<'input'>, 'id'> {
+  id: string;
+  label: string;
+  /** Currency symbol or unit shown inside the field. */
+  prefix?: string;
+  /** `data-field` hook for the prefix, for fields whose currency changes with the market. */
+  prefixField?: string;
+  /** Unit shown at the trailing edge, e.g. `%` or `pips`. */
+  suffix?: string;
+  /** Helper text, wired up with aria-describedby. */
+  hint?: string;
+  /** Bottom-right label, used for "= 400 shares" style feedback. */
+  assist?: boolean;
+}
+
+const {
+  id,
+  label,
+  prefix,
+  prefixField,
+  suffix,
+  hint,
+  assist = false,
+  class: className,
+  inputmode = 'decimal',
+  type = 'text',
+  autocomplete = 'off',
+  ...rest
+} = Astro.props;
+
+const hintId = hint ? `${id}-hint` : undefined;
+const errorId = `${id}-error`;
+const assistId = assist ? `${id}-assist` : undefined;
+const describedBy = [hintId, assistId, errorId].filter(Boolean).join(' ');
+---
+
+<div class:list={['min-w-0', className]}>
+  <label for={id} class="block text-body-sm font-medium text-ink">
+    {label}
+  </label>
+
+  <div class="relative mt-1.5">
+    {prefix && (
+      <span
+        aria-hidden="true"
+        data-field={prefixField}
+        class="pointer-events-none absolute inset-y-0 left-0 flex w-8 items-center justify-center text-body-sm text-ink-subtle"
+      >
+        {prefix}
+      </span>
+    )}
+
+    <input
+      {id}
+      {type}
+      {inputmode}
+      {autocomplete}
+      aria-describedby={describedBy || undefined}
+      class:list={[
+        'figures h-11 w-full rounded-md border border-hairline-strong bg-canvas text-body text-ink',
+        'transition-colors duration-150 outline-none',
+        'hover:border-ink-tertiary focus-visible:border-accent',
+        'aria-invalid:border-loss aria-invalid:bg-loss-wash',
+        prefix ? 'pl-8' : 'pl-3',
+        suffix ? 'pr-12' : 'pr-3',
+      ]}
+      {...rest}
+    />
+
+    {suffix && (
+      <span
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-body-sm text-ink-subtle"
+      >
+        {suffix}
+      </span>
+    )}
+  </div>
+
+  {hint && (
+    <p id={hintId} class="mt-1.5 text-caption text-ink-subtle">
+      {hint}
+    </p>
+  )}
+
+  {/* Filled in by the controller; empty and inert until then. */}
+  {assist && <p id={assistId} class="figures mt-1.5 text-caption text-ink-muted" />}
+  <p id={errorId} class="mt-1.5 text-caption text-loss" hidden></p>
+</div>

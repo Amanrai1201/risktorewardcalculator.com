@@ -1,0 +1,29 @@
+---
+import { CALCULATORS, otherCalculators } from '../../data/calculators';
+
+/**
+ * Cross-links between the calculators. Driven by the registry, so a new
+ * calculator appears here as soon as it is added to `data/calculators.ts`.
+ */
+
+interface Props {
+  /** Calculator id to leave out. Omit to list all of them. */
+  current?: string;
+}
+
+const { current } = Astro.props;
+const items = current ? otherCalculators(current) : CALCULATORS;
+const columns = items.length > 2 ? 'sm:grid-cols-2 lg:grid-cols-3' : 'sm:grid-cols-2';
+
+const cardClass =
+  'panel block p-4 transition-colors duration-150 hover:border-hairline-strong hover:bg-surface-1';
+---
+
+<div class:list={['grid gap-3', columns]}>
+  {items.map((item) => (
+    <a href={item.href} class={cardClass}>
+      <span class="block text-card-title text-ink">{item.name}</span>
+      <span class="mt-1 block text-body-sm text-ink-muted">{item.blurb}</span>
+    </a>
+  ))}
+</div>

@@ -1,0 +1,79 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Option {
+  value: string;
+  label: string;
+}
+
+interface Props extends Omit<HTMLAttributes<'select'>, 'id'> {
+  id: string;
+  label: string;
+  options: Option[];
+  value?: string;
+  hint?: string;
+  /** Visually hide the label when the context already names the control. */
+  hideLabel?: boolean;
+}
+
+const {
+  id,
+  label,
+  options,
+  value,
+  hint,
+  hideLabel = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const hintId = hint ? `${id}-hint` : undefined;
+const errorId = `${id}-error`;
+---
+
+<div class:list={['min-w-0', className]}>
+  <label for={id} class:list={['block text-body-sm font-medium text-ink', hideLabel && 'sr-only']}>
+    {label}
+  </label>
+
+  <div class:list={['relative', !hideLabel && 'mt-1.5']}>
+    <select
+      {id}
+      aria-describedby={[hintId, errorId].filter(Boolean).join(' ') || undefined}
+      class:list={[
+        'h-11 w-full appearance-none rounded-md border border-hairline-strong bg-canvas pr-10 pl-3',
+        'text-body text-ink transition-colors duration-150 outline-none',
+        'hover:border-ink-tertiary focus-visible:border-accent',
+      ]}
+      {...rest}
+    >
+      {options.map((option) => (
+        <option value={option.value} selected={option.value === value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      fill="none"
+      class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-ink-subtle"
+    >
+      <path
+        d="M5 8l5 5 5-5"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      ></path>
+    </svg>
+  </div>
+
+  {hint && (
+    <p id={hintId} class="mt-1.5 text-caption text-ink-subtle">
+      {hint}
+    </p>
+  )}
+  <p id={errorId} class="mt-1.5 text-caption text-loss" hidden></p>
+</div>

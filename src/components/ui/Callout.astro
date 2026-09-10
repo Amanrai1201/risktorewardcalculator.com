@@ -1,0 +1,37 @@
+---
+type Tone = 'note' | 'warn' | 'good';
+
+interface Props {
+  tone?: Tone;
+  title?: string;
+  class?: string;
+  /** `data-field` hook so a controller can show or hide the whole callout. */
+  field?: string;
+  hidden?: boolean;
+}
+
+const { tone = 'note', title, class: className, field, hidden } = Astro.props;
+
+const TONES: Record<Tone, string> = {
+  note: 'border-hairline bg-surface-1',
+  warn: 'border-loss/30 bg-loss-wash',
+  good: 'border-gain/25 bg-gain-wash',
+};
+
+const TITLE_TONES: Record<Tone, string> = {
+  note: 'text-ink',
+  warn: 'text-loss',
+  good: 'text-gain',
+};
+---
+
+<div
+  class:list={['rounded-md border p-3 sm:p-4', TONES[tone], className]}
+  data-field={field}
+  {hidden}
+>
+  {title && <p class:list={['text-body-sm font-semibold', TITLE_TONES[tone]]}>{title}</p>}
+  <div class:list={['text-body-sm text-ink-muted', title && 'mt-1']}>
+    <slot />
+  </div>
+</div>

@@ -1,0 +1,78 @@
+---
+interface Option {
+  value: string;
+  label: string;
+  /** Optional second line, e.g. "MIS · same-day square-off". */
+  hint?: string;
+}
+
+interface Props {
+  /** Radio group name; also the query-string key the controller uses. */
+  name: string;
+  legend: string;
+  options: Option[];
+  value: string;
+  /** Hide the legend visually when the surrounding context already names it. */
+  hideLegend?: boolean;
+  /** Colour the selected segment by direction rather than with the neutral fill. */
+  tone?: 'neutral' | 'direction';
+  class?: string;
+}
+
+const {
+  name,
+  legend,
+  options,
+  value,
+  hideLegend = false,
+  tone = 'neutral',
+  class: className,
+} = Astro.props;
+
+/**
+ * Native radios in a fieldset: arrow-key navigation, screen-reader grouping and
+ * form submission all come for free, and the control needs no JavaScript to work.
+ * The radio itself is visually hidden but still focusable, so its focus ring is
+ * drawn on the sibling it controls.
+ */
+const CHECKED: Record<string, string> = {
+  neutral: 'peer-checked:bg-canvas peer-checked:text-ink peer-checked:shadow-sm',
+  long: 'peer-checked:bg-canvas peer-checked:text-gain peer-checked:shadow-sm',
+  short: 'peer-checked:bg-canvas peer-checked:text-loss peer-checked:shadow-sm',
+};
+---
+
+<fieldset class={className}>
+  <legend class:list={['text-body-sm font-medium text-ink', hideLegend ? 'sr-only' : 'mb-1.5']}>
+    {legend}
+  </legend>
+
+  <div class="flex gap-1 rounded-md bg-surface-2 p-1">
+    {options.map((option) => (
+      <label class="min-w-0 flex-1 cursor-pointer">
+        <input
+          type="radio"
+          {name}
+          value={option.value}
+          checked={option.value === value}
+          class="peer sr-only"
+        />
+        <span
+          class:list={[
+            'flex min-h-9 flex-col items-center justify-center rounded-sm px-2 py-1.5 text-center text-body-sm text-ink-muted',
+            'transition-colors duration-150',
+            'peer-hover:text-ink',
+            'peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent',
+            'peer-checked:font-semibold',
+            CHECKED[tone === 'direction' ? option.value : 'neutral'] ?? CHECKED.neutral,
+          ]}
+        >
+          <span class="truncate">{option.label}</span>
+          {option.hint && (
+            <span class="mt-0.5 text-caption font-normal text-ink-subtle">{option.hint}</span>
+          )}
+        </span>
+      </label>
+    ))}
+  </div>
+</fieldset>

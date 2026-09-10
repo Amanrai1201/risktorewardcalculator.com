@@ -1,0 +1,219 @@
+---
+import type { CurrencyCode, NetResult } from '../../../lib/calc/types';
+import { describeRatio, expectancyInMoney, expectancyInR } from '../../../lib/calc/risk-reward';
+import { formatMoney, formatPercent, formatRatio, formatRatioShort } from '../../../lib/format';
+import { resultSummary } from '../../../lib/notes';
+import Card from '../../ui/Card.astro';
+import Callout from '../../ui/Callout.astro';
+import StatTile from '../../ui/StatTile.astro';
+import Button from '../../ui/Button.astro';
+import RiskRewardBar from './RiskRewardBar.astro';
+
+interface Props {
+  result: NetResult;
+  currency: CurrencyCode;
+  /** "share" for equity, "unit" for forex. */
+  unitLabel: string;
+  winRatePercent: number;
+}
+
+const { result, currency, unitLabel, winRatePercent } = Astro.props;
+const { gross } = result;
+
+const winFraction = winRatePercent / 100;
+const expectancy = expectancyInMoney(result.netReward, result.netRisk, winFraction);
+const expectancyR = result.netRatio != null ? expectancyInR(result.netRatio, winFraction) : null;
+const verdict = describeRatio(result.netRatio);
+
+const riskShare =
+  result.netRisk + result.netReward > 0
+    ? result.netRisk / (result.netRisk + result.netReward)
+    : 0.5;
+
+const chargeDrag = gross.grossReward > 0 ? result.chargesAtTarget.total / gross.grossReward : null;
+
+const summary = resultSummary(result, currency);
+
+/** Expectancy is the one figure whose colour flips with its sign. */
+const expectancyTone =
+  expectancy == null || expectancy === 0
+    ? 'text-ink-muted'
+    : expectancy > 0
+      ? 'text-gain'
+      : 'text-loss';
+---
+
+<Card title="Your result" subtitle="Recalculates as you type. Charges included.">
+  <div class="space-y-5">
+    <div class="grid grid-cols-2 gap-3">
+      <StatTile
+        label="Net risk : reward"
+        value={formatRatio(result.netRatio)}
+        hint={`Gross ${formatRatio(gross.ratio)}`}
+        hintField="grossRatio"
+        field="netRatio"
+        size="lg"
+        emphasis
+      />
+      <StatTile
+        label="Break-even win rate"
+        value={formatPercent(result.netBreakEvenWinRate)}
+        hint="of trades must win"
+        field="netBreakEven"
+        size="lg"
+        emphasis
+      />
+    </div>
+
+    <RiskRewardBar riskShare={riskShare} />
+
+    {/* The single live region: one concise sentence, so nothing is announced twice. */}
+    <p
+      role="status"
+      aria-live="polite"
+      class="text-body-sm text-ink-muted"
+      data-field="summary"
+      data-verdict={verdict.tone}
+    >
+      {summary}
+    </p>
+
+    {/* Gross → charges → net, spelled out for both outcomes. */}
+    <div class="grid gap-3 sm:grid-cols-2">
+      <div class="rounded-md border border-hairline p-3">
+        <p class="text-eyebrow uppercase text-ink-subtle">If your target hits</p>
+        <dl class="mt-2 space-y-1.5 text-body-sm">
+          <div class="flex items-baseline justify-between gap-3">
+            <dt class="text-ink-muted">Gross profit</dt>
+            <dd class="figures text-ink" data-field="grossReward">
+              {formatMoney(gross.grossReward, currency)}
+            </dd>
+          </div>
+          <div class="flex items-baseline justify-between gap-3">
+            <dt class="text-ink-muted">Estimated charges</dt>
+            <dd class="figures text-loss" data-field="chargesAtTarget">
+              −{formatMoney(result.chargesAtTarget.total, currency)}
+            </dd>
+          </div>
+          <div class="flex items-baseline justify-between gap-3 border-t border-hairline pt-1.5 font-semibold">
+            <dt class="text-ink">Net profit</dt>
+            <dd class="figures text-figure text-gain" data-field="netReward">
+              {formatMoney(result.netReward, currency)}
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="rounded-md border border-hairline p-3">
+        <p class="text-eyebrow uppercase text-ink-subtle">If your stop hits</p>
+        <dl class="mt-2 space-y-1.5 text-body-sm">
+          <div class="flex items-baseline justify-between gap-3">
+            <dt class="text-ink-muted">Gross loss</dt>
+            <dd class="figures text-ink" data-field="grossRisk">
+              {formatMoney(gross.grossRisk, currency)}
+            </dd>
+          </div>
+          <div class="flex items-baseline justify-between gap-3">
+            <dt class="text-ink-muted">Estimated charges</dt>
+            <dd class="figures text-loss" data-field="chargesAtStop">
+              +{formatMoney(result.chargesAtStop.total, currency)}
+            </dd>
+          </div>
+          <div class="flex items-baseline justify-between gap-3 border-t border-hairline pt-1.5 font-semibold">
+            <dt class="text-ink">Net loss</dt>
+            <dd class="figures text-figure text-loss" data-field="netRisk">
+              {formatMoney(result.netRisk, currency)}
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-x-4 gap-y-3 border-t border-hairline pt-4 sm:grid-cols-4">
+      <StatTile
+        label={`Risk per ${unitLabel}`}
+        labelField="riskPerUnitLabel"
+        value={formatMoney(gross.riskPerUnit, currency)}
+        field="riskPerUnit"
+        size="sm"
+      />
+      <StatTile
+        label={`Reward per ${unitLabel}`}
+        labelField="rewardPerUnitLabel"
+        value={formatMoney(gross.rewardPerUnit, currency)}
+        field="rewardPerUnit"
+        size="sm"
+      />
+      <StatTile
+        label="Position value"
+        labelField="notionalLabel"
+        value={formatMoney(gross.entryValue, currency, { decimals: 0 })}
+        field="entryValue"
+        size="sm"
+      />
+      <StatTile
+        label="Charges vs gross profit"
+        labelField="chargeDragLabel"
+        value={formatPercent(chargeDrag, { decimals: 2 })}
+        field="chargeDrag"
+        size="sm"
+      />
+    </div>
+
+    {/* Expectancy, driven by the visitor's own win rate. */}
+    <div class="rounded-md bg-surface-1 p-3">
+      <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-body-sm text-ink-muted">
+        <label for="rr-winrate" class="text-ink">
+          Expectancy if you win
+        </label>
+        <input
+          id="rr-winrate"
+          name="wr"
+          type="text"
+          inputmode="decimal"
+          autocomplete="off"
+          value={winRatePercent}
+          class="figures h-9 w-16 rounded-md border border-hairline-strong bg-canvas px-2 text-center text-body text-ink outline-none hover:border-ink-tertiary focus-visible:border-accent"
+        />
+        <span>% of these trades</span>
+      </p>
+      <p class="mt-2 flex flex-wrap items-baseline gap-x-2 text-body-sm">
+        <span class:list={['figures text-figure', expectancyTone]} data-field="expectancyMoney">
+          {formatMoney(expectancy, currency)}
+        </span>
+        <span class="text-ink-subtle">per trade on average</span>
+        <span class="figures text-ink-muted" data-field="expectancyR">
+          ({expectancyR != null && expectancyR > 0 ? '+' : ''}
+          {formatRatioShort(expectancyR != null ? Math.abs(expectancyR) : null)})
+        </span>
+      </p>
+    </div>
+
+    <Callout tone="warn" title="Charges swallow this trade" field="chargesWarning" hidden>
+      Estimated charges are larger than the profit at your target, so this setup loses money even
+      when it works. Widen the target, add size, or switch to a cheaper segment.
+    </Callout>
+
+    <Callout tone="warn" title="Check your inputs" field="issues" hidden>
+      <ul class="list-disc space-y-1 pl-4" data-field="issuesList"></ul>
+    </Callout>
+  </div>
+
+  <div class="mt-5 flex flex-wrap items-center gap-2 border-t border-hairline pt-4">
+    <Button variant="secondary" size="sm" data-action="copy-result">
+      Copy result
+    </Button>
+    <Button variant="secondary" size="sm" data-action="copy-link">
+      Copy link
+    </Button>
+    <Button variant="ghost" size="sm" data-action="reset">
+      Reset
+    </Button>
+    <p
+      class="text-caption text-ink-subtle"
+      role="status"
+      aria-live="polite"
+      data-field="actionStatus"
+    ></p>
+  </div>
+</Card>

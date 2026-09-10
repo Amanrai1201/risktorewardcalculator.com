@@ -1,11 +1,210 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RiskRewardCalculator from '../components/calculator/RiskRewardCalculator.astro';
+import FaqSection from '../components/site/FaqSection.astro';
+import RatioTable from '../components/site/RatioTable.astro';
+import RelatedCalculators from '../components/site/RelatedCalculators.astro';
+import Section from '../components/site/Section.astro';
+import Card from '../components/ui/Card.astro';
+import DefinitionList from '../components/ui/DefinitionList.astro';
+import { getCalculator } from '../data/calculators';
+import { HOME_FAQS } from '../data/faqs';
+import { RATES_VERIFIED_LABEL, getBroker } from '../lib/calc/charges';
+import { RR_DEFAULTS } from '../lib/calc/defaults';
+import { computeNet } from '../lib/calc/risk-reward';
+import { formatMoney, formatNumber, formatPercent, formatRatio } from '../lib/format';
+import { faqPage, webApplication, webSite } from '../lib/schema';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const calculator = getCalculator('risk-reward');
+
+const title = 'Risk to Reward Calculator: Ratio, Charges and Break-even Win Rate';
+const description =
+  'Free risk to reward calculator. Get your risk-reward ratio, break-even win rate and net profit after brokerage, STT and GST — for Indian stocks and forex.';
+
+const jsonLd = [
+  webApplication({ name: calculator.name, description, path: '/' }),
+  faqPage(HOME_FAQS),
+  webSite(),
+];
+
+/**
+ * The walkthrough runs on the same defaults the form ships with, and through
+ * the same engine, so the prose can never quote a number the tool disagrees
+ * with.
+ */
+const example = computeNet(
+  {
+    direction: RR_DEFAULTS.direction,
+    entry: RR_DEFAULTS.entry,
+    stop: RR_DEFAULTS.stop,
+    target: RR_DEFAULTS.target,
+    quantity: RR_DEFAULTS.quantity,
+  },
+  {
+    brokerId: RR_DEFAULTS.brokerId,
+    segment: RR_DEFAULTS.segment,
+    exchange: RR_DEFAULTS.exchange,
+  },
+);
+
+const g = example.gross;
+const brokerName = getBroker(RR_DEFAULTS.brokerId).name;
+const money = (value: number | null) => formatMoney(value, 'INR');
+const exitAtTarget = formatMoney(g.targetValue, 'INR', { decimals: 0 });
+const exitAtStop = formatMoney(g.stopValue, 'INR', { decimals: 0 });
+
+const steps = [
+  `Buying ${formatNumber(g.quantity)} shares at ${money(g.entry)} with a stop at ${money(g.stop)} puts ${money(g.riskPerUnit)} a share at risk, or ${money(g.grossRisk)} across the position.`,
+  `The target at ${money(g.target)} sits ${money(g.rewardPerUnit)} above the entry, so the trade stands to make ${money(g.grossReward)} before costs.`,
+  `Reward per share divided by risk per share is ${formatRatio(g.ratio)}. Risk divided by risk plus reward puts the break-even win rate at ${formatPercent(g.breakEvenWinRate)}.`,
+  `${brokerName} intraday charges work out to roughly ${money(example.chargesAtTarget.total)} if the target fills and ${money(example.chargesAtStop.total)} if the stop does. That leaves ${money(example.netReward)} against ${money(example.netRisk)} — a net ${formatRatio(example.netRatio)}, needing ${formatPercent(example.netBreakEvenWinRate)} of trades to win.`,
+];
+
+const FORMULAS = [
+  { term: 'Risk per share', detail: 'Entry price − Stop loss' },
+  { term: 'Reward per share', detail: 'Target price − Entry price' },
+  { term: 'Amount at risk', detail: 'Risk per share × Quantity' },
+  { term: 'Amount you stand to make', detail: 'Reward per share × Quantity' },
+  { term: 'Risk to reward ratio', detail: '1 : (Reward per share ÷ Risk per share)' },
+  { term: 'Break-even win rate', detail: 'Risk ÷ (Risk + Reward)' },
+];
+
+const CHARGES = [
+  { term: 'Brokerage', detail: 'Your broker’s own fee, charged on each executed order.' },
+  {
+    term: 'Securities transaction tax',
+    detail: '0.025% on the intraday sell leg, or 0.1% on both legs of a delivery trade.',
+  },
+  {
+    term: 'Exchange transaction charges',
+    detail: 'A percentage of turnover set by the exchange, so NSE and BSE differ slightly.',
+  },
+  { term: 'SEBI turnover fee', detail: '₹10 per crore of turnover, on both legs.' },
+  {
+    term: 'Stamp duty',
+    detail: 'Charged on the buy leg only, at a rate that depends on the product.',
+  },
+  {
+    term: 'GST',
+    detail: '18% on brokerage, transaction, SEBI and DP charges — never on STT or stamp duty.',
+  },
+  {
+    term: 'DP charges',
+    detail: 'A flat fee per scrip when shares leave your demat account, so delivery sells only.',
+  },
+];
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout {title} {description} path="/" {jsonLd}>
+  <section class="container-page pt-8 pb-10 sm:pt-10 sm:pb-12">
+    <div class="max-w-prose">
+      <h1 class="text-display-lg">Risk to Reward Calculator</h1>
+      <p class="mt-3 text-body-lg text-ink-muted">
+        Put in an entry, a stop loss and a target. You get the risk-reward ratio, the win rate you
+        need to break even, and — because charges are part of every trade — what is left after
+        brokerage and taxes.
+      </p>
+    </div>
+
+    <div class="mt-6 sm:mt-8">
+      <RiskRewardCalculator />
+    </div>
+  </section>
+
+  <Section
+    id="how-it-works"
+    title="How the numbers are worked out"
+    lead="Six lines of arithmetic, and nothing hidden behind the result."
+  >
+    <div class="grid gap-4 lg:grid-cols-2">
+      <Card title="The formulas" headingLevel={3}>
+        <DefinitionList items={FORMULAS} variant="formula" />
+        <p class="mt-4 text-caption text-ink-subtle">
+          On a short trade the stop sits above your entry and the target below it. Read each
+          subtraction as a distance and the formulas are unchanged.
+        </p>
+      </Card>
+
+      <Card title="The example above, step by step" headingLevel={3}>
+        <ol class="space-y-3 text-body-sm text-ink-muted">
+          {steps.map((step, index) => (
+            <li class="flex gap-3">
+              <span class="figures mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-surface-2 text-caption font-semibold text-ink">
+                {index + 1}
+              </span>
+              <span>{step}</span>
+            </li>
+          ))}
+        </ol>
+      </Card>
+    </div>
+  </Section>
+
+  <Section
+    id="charges"
+    title="Why charges change the answer"
+    tone="surface"
+    lead="A ratio that ignores costs describes a trade nobody actually places."
+  >
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-8">
+      <div class="max-w-prose space-y-4 text-body text-ink-muted">
+        <p>
+          Costs move the ratio from both ends. When the target fills they come out of the profit;
+          when the stop is hit they are added on top of the loss. A setup that looks like 1 : 3 on a
+          chart is worth less than that by the time it clears your account, and the gap widens the
+          tighter your stop and target are.
+        </p>
+        <p>
+          That is why the trade is priced twice here. Most charges scale with turnover, and the
+          turnover at your target is not the turnover at your stop — selling {exitAtTarget} of stock
+          costs more than selling {exitAtStop}. Pricing the trade once and reusing that figure for
+          both outcomes is the common shortcut, and it makes the losing side look cheaper than it
+          is.
+        </p>
+        <p>
+          Every figure is an estimate built from published rate cards, last checked{' '}
+          {RATES_VERIFIED_LABEL}. Your contract note can still come out different: scrip group, the
+          number of orders your position fills in, and whether you carry it overnight all move the
+          total.
+        </p>
+      </div>
+
+      <Card title="What is priced in" headingLevel={3}>
+        <DefinitionList items={CHARGES} />
+      </Card>
+    </div>
+  </Section>
+
+  <Section
+    id="good-ratio"
+    title="What counts as a good ratio"
+    lead="A ratio only means something next to the win rate it demands. This is the trade-off, row by row."
+  >
+    <RatioTable />
+
+    <div class="mt-6 max-w-prose space-y-4 text-body text-ink-muted">
+      <p>
+        Widening a target always improves the ratio on paper, and it always lowers the odds of
+        getting there. Going from 1 : 2 to 1 : 3 buys you an eight-point cut in the win rate you
+        need — worth taking only if your actual hit rate falls by less than that. The honest test is
+        to run both versions of the same idea and compare the expectancy, not the ratio.
+      </p>
+      <p>
+        Anything below 1 : 1 deserves a hard look. You are staking more than the trade can return,
+        so a majority of winners is the minimum just to stay level, and one bad run erases a long
+        stretch of small gains.
+      </p>
+    </div>
+  </Section>
+
+  <Section
+    id="calculators"
+    title="Other calculators"
+    lead="Same approach, different question."
+    tone="surface"
+  >
+    <RelatedCalculators current="risk-reward" />
+  </Section>
+
+  <FaqSection faqs={HOME_FAQS} title="Risk to reward, answered" />
+</BaseLayout>

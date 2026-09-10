@@ -1,0 +1,68 @@
+---
+import '@fontsource-variable/inter/wght.css';
+import interLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import '../styles/global.css';
+import Header from '../components/site/Header.astro';
+import Footer from '../components/site/Footer.astro';
+import SkipLink from '../components/site/SkipLink.astro';
+import { SITE } from '../data/site';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Absolute path of this page, e.g. `/win-rate-calculator/`. */
+  path: string;
+  noindex?: boolean;
+  /** JSON-LD objects emitted in the head. */
+  jsonLd?: Record<string, unknown>[];
+}
+
+const { title, description, path, noindex = false, jsonLd = [] } = Astro.props;
+
+const canonical = new URL(path, Astro.site ?? SITE.url).href;
+const ogImage = new URL('/og.svg', Astro.site ?? SITE.url).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    <!-- Preload only the Latin subset actually used above the fold. -->
+    <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    {jsonLd.map((data) => (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(data)}></script>
+    ))}
+  </head>
+
+  <body class="min-h-dvh flex flex-col">
+    <SkipLink />
+    <Header />
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

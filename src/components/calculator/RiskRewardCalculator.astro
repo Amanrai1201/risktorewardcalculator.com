@@ -1,0 +1,312 @@
+---
+import {
+  BROKERS,
+  EXCHANGES,
+  RATES_VERIFIED_LABEL,
+  SEGMENTS,
+  getBroker,
+} from '../../lib/calc/charges';
+import { RR_DEFAULTS } from '../../lib/calc/defaults';
+import { FOREX_PAIRS, LOT_LABELS } from '../../lib/calc/forex';
+import { quantityForRisk, riskAmountFromCapital } from '../../lib/calc/position-size';
+import { computeNet } from '../../lib/calc/risk-reward';
+import { formatMoney, formatNumber, formatRatio } from '../../lib/format';
+import Card from '../ui/Card.astro';
+import Field from '../ui/Field.astro';
+import SegmentedControl from '../ui/SegmentedControl.astro';
+import Select from '../ui/Select.astro';
+import Button from '../ui/Button.astro';
+import ResultsPanel from './parts/ResultsPanel.astro';
+import ChargesBreakdown from './parts/ChargesBreakdown.astro';
+import StickySummary from './parts/StickySummary.astro';
+
+/**
+ * The primary calculator.
+ *
+ * Rendered complete and correct on the server from `RR_DEFAULTS`, so the page is
+ * a working example before any JavaScript loads. `src/scripts/risk-reward.ts`
+ * then takes over and rewrites every `data-field` on input.
+ */
+
+const s = RR_DEFAULTS;
+const broker = getBroker(s.brokerId);
+
+const result = computeNet(
+  { direction: s.direction, entry: s.entry, stop: s.stop, target: s.target, quantity: s.quantity },
+  { brokerId: s.brokerId, segment: s.segment, exchange: s.exchange },
+);
+
+// Server-rendered value for the position-size helper.
+const initialRiskAmount = riskAmountFromCapital(s.capital, s.riskPercent);
+const suggestedQuantity =
+  initialRiskAmount != null ? quantityForRisk(initialRiskAmount, result.gross.riskPerUnit) : null;
+
+const isForex = s.market === 'forex';
+
+// The two Records are keyed by id; the segmented controls need ordered arrays.
+const segmentOptions = Object.entries(SEGMENTS).map(([id, meta]) => ({
+  value: id,
+  label: meta.label,
+}));
+const exchangeOptions = Object.entries(EXCHANGES).map(([id, meta]) => ({
+  value: id,
+  label: meta.label,
+}));
+---
+
+<form
+  id="rr-form"
+  novalidate
+  class="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:items-start lg:gap-6"
+>
+  <StickySummary
+    ratio={formatRatio(result.netRatio)}
+    netReward={formatMoney(result.netReward, 'INR')}
+    netRisk={formatMoney(result.netRisk, 'INR')}
+  />
+
+  <!-- Inputs -->
+  <div class="space-y-4">
+    <Card title="Trade setup">
+      <div class="space-y-4">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <SegmentedControl
+            name="m"
+            legend="Market"
+            value={s.market}
+            options={[
+              { value: 'equity-india', label: 'Indian equity' },
+              { value: 'forex', label: 'Forex (USD)' },
+            ]}
+          />
+          <SegmentedControl
+            name="d"
+            legend="Direction"
+            value={s.direction}
+            tone="direction"
+            options={[
+              { value: 'long', label: 'Long / Buy' },
+              { value: 'short', label: 'Short / Sell' },
+            ]}
+          />
+        </div>
+
+        <div data-market="equity-india" hidden={isForex}>
+          <SegmentedControl
+            name="seg"
+            legend="Product"
+            value={s.segment}
+            options={segmentOptions}
+          />
+          <p class="mt-1.5 text-caption text-ink-subtle" data-field="segmentHint">
+            {SEGMENTS[s.segment].description}
+          </p>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2" data-market="forex" hidden={!isForex}>
+          <Select
+            id="rr-pair"
+            name="pair"
+            label="Currency pair"
+            value={s.pairId}
+            options={FOREX_PAIRS.map((p) => ({ value: p.id, label: p.label }))}
+          />
+          <Select
+            id="rr-lot"
+            name="lot"
+            label="Position measured in"
+            value={s.lotType}
+            options={Object.entries(LOT_LABELS).map(([value, label]) => ({ value, label }))}
+          />
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-3">
+          <Field id="rr-entry" name="e" label="Entry price" value={s.entry} placeholder="0.00" />
+          <Field id="rr-stop" name="sl" label="Stop loss" value={s.stop} placeholder="0.00" />
+          <Field
+            id="rr-target"
+            name="tp"
+            label="Target price"
+            value={s.target}
+            placeholder="0.00"
+          />
+        </div>
+
+        <p class="text-caption text-ink-subtle" data-field="priceUnitHint">
+          Prices in ₹ per share.
+        </p>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div data-market="equity-india" hidden={isForex}>
+            <Field
+              id="rr-quantity"
+              name="q"
+              label="Quantity"
+              value={s.quantity}
+              placeholder="0"
+              hint="Number of shares"
+            />
+          </div>
+
+          <div data-market="forex" hidden={!isForex}>
+            <Field
+              id="rr-lots"
+              name="lots"
+              label="Position size"
+              value={s.lots}
+              placeholder="0"
+              assist
+              hint="How many lots you are trading"
+            />
+          </div>
+        </div>
+
+        <details class="rounded-md border border-hairline bg-surface-1">
+          <summary class="flex min-h-11 cursor-pointer items-center rounded-md px-3 text-body-sm font-medium text-ink">
+            Work out the quantity from your risk
+          </summary>
+          <div class="border-t border-hairline p-3">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <Field
+                id="rr-capital"
+                name="cap"
+                label="Account capital"
+                prefix="₹"
+                prefixField="capitalPrefix"
+                value={s.capital}
+                placeholder="0"
+              />
+              <Field
+                id="rr-riskpct"
+                name="rp"
+                label="Risk per trade"
+                suffix="%"
+                value={s.riskPercent}
+                placeholder="1"
+                hint="1–2% is the usual ceiling"
+              />
+            </div>
+            <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
+              <p class="text-body-sm text-ink-muted">
+                Risking{' '}
+                <span class="figures text-ink" data-field="riskBudget">
+                  {formatMoney(initialRiskAmount, 'INR', { decimals: 0 })}
+                </span>{' '}
+                allows
+                <span class="figures font-semibold text-ink" data-field="suggestedQuantity">
+                  {formatNumber(suggestedQuantity, 'INR')}
+                </span>
+                <span data-field="suggestedUnitLabel">shares</span>.
+              </p>
+              <Button variant="secondary" size="sm" data-action="apply-quantity">
+                Use this size
+              </Button>
+            </div>
+          </div>
+        </details>
+      </div>
+    </Card>
+
+    <Card
+      title="Broker charges & taxes"
+      subtitle="Charges change the result, not just the summary."
+    >
+      <div class="space-y-4">
+        <div data-market="equity-india" hidden={isForex}>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <Select
+              id="rr-broker"
+              name="b"
+              label="Broker"
+              value={s.brokerId}
+              options={BROKERS.map((b) => ({ value: b.id, label: b.name }))}
+            />
+            <SegmentedControl
+              name="x"
+              legend="Exchange"
+              value={s.exchange}
+              options={exchangeOptions}
+            />
+          </div>
+
+          <p class="mt-2 text-caption text-ink-subtle" data-field="brokerSummary">
+            {broker.summary}
+          </p>
+
+          <div class="mt-4 grid gap-4 sm:grid-cols-3" data-broker="custom" hidden>
+            <Field
+              id="rr-custom-percent"
+              name="bp"
+              label="Brokerage"
+              suffix="%"
+              value={s.customPercent}
+              placeholder="0.03"
+              hint="Per executed order"
+            />
+            <Field
+              id="rr-custom-cap"
+              name="bc"
+              label="Per-order cap"
+              prefix="₹"
+              value={s.customCap}
+              placeholder="20"
+              hint="Blank for no cap"
+            />
+            <Field
+              id="rr-custom-dp"
+              name="bd"
+              label="DP charge"
+              prefix="₹"
+              value={s.customDp}
+              placeholder="0"
+              hint="Delivery sells only"
+            />
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2" data-market="forex" hidden={!isForex}>
+          <Field
+            id="rr-spread"
+            name="sp"
+            label="Spread"
+            suffix="pips"
+            value={s.spreadPips}
+            placeholder="1"
+            hint="Paid once, on entry"
+          />
+          <Field
+            id="rr-commission"
+            name="cm"
+            label="Commission"
+            prefix="$"
+            value={s.commissionPerLot}
+            placeholder="0"
+            hint="Per standard lot, round turn"
+          />
+        </div>
+      </div>
+    </Card>
+  </div>
+
+  <!-- Results -->
+  <div class="mt-4 space-y-4 lg:mt-0">
+    <ResultsPanel
+      result={result}
+      currency="INR"
+      unitLabel="share"
+      winRatePercent={s.winRatePercent}
+    />
+    <ChargesBreakdown
+      atTarget={result.chargesAtTarget}
+      atStop={result.chargesAtStop}
+      currency="INR"
+      sourceName={broker.name}
+      sourceUrl={broker.sourceUrl}
+      verifiedLabel={RATES_VERIFIED_LABEL}
+    />
+  </div>
+</form>
+
+<script>
+  import '../../scripts/risk-reward';
+</script>

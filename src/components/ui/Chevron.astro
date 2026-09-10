@@ -1,0 +1,23 @@
+---
+/** Down chevron. Decorative everywhere it is used, so it is always hidden from
+ * assistive technology and takes its colour from the parent. */
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = 'size-5' } = Astro.props;
+---
+
+<svg
+  aria-hidden="true"
+  viewBox="0 0 20 20"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.75"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class={className}
+>
+  <path d="M5 7.5 10 12.5 15 7.5"></path>
+</svg>

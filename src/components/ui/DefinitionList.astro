@@ -1,0 +1,28 @@
+---
+/**
+ * Term-and-detail list used for formula references and charge explanations.
+ * Kept as a component so pages stay free of markup loops.
+ */
+
+interface Props {
+  items: { term: string; detail: string }[];
+  /** `formula` boxes the detail; `prose` leaves it as running text. */
+  variant?: 'prose' | 'formula';
+}
+
+const { items, variant = 'prose' } = Astro.props;
+
+const detailClass =
+  variant === 'formula'
+    ? 'mt-1.5 rounded-sm bg-surface-1 px-2.5 py-1.5 text-body-sm text-ink'
+    : 'mt-0.5 text-body-sm text-ink-muted';
+---
+
+<dl class="space-y-3">
+  {items.map((item) => (
+    <div class="border-b border-hairline pb-3 last:border-b-0 last:pb-0">
+      <dt class="text-body-sm font-medium text-ink">{item.term}</dt>
+      <dd class={detailClass}>{item.detail}</dd>
+    </div>
+  ))}
+</dl>
