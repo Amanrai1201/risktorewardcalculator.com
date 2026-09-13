@@ -1,0 +1,39 @@
+---
+type Tone = 'ink' | 'gain' | 'loss';
+
+interface Props {
+  items: { label: string; value: string; field: string; tone?: Tone }[];
+}
+
+const { items } = Astro.props;
+
+/**
+ * Mobile-only summary that stays in view while the form is filled in, so the
+ * answer never scrolls away. Sticky rather than fixed, so it can never sit on
+ * top of the on-screen keyboard or the field being typed into.
+ *
+ * The figures are `data-field` hooks the page already writes to, so the strip
+ * costs the controller nothing — one write updates both copies.
+ */
+const TONES: Record<Tone, string> = {
+  ink: 'text-ink',
+  gain: 'text-gain',
+  loss: 'text-loss',
+};
+---
+
+<div class="sticky top-0 z-20 -mx-4 mb-1 border-b border-hairline bg-canvas px-4 py-2 sm:-mx-6 sm:px-6 lg:hidden">
+  <div class="flex items-baseline justify-between gap-3">
+    {items.map((item) => (
+      <p class="min-w-0">
+        <span class="text-caption text-ink-subtle">{item.label}</span>
+        <span
+          class:list={['figures ml-1.5 text-figure-sm', TONES[item.tone ?? 'ink']]}
+          data-field={item.field}
+        >
+          {item.value}
+        </span>
+      </p>
+    ))}
+  </div>
+</div>

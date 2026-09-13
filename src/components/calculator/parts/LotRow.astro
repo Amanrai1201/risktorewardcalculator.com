@@ -1,0 +1,72 @@
+---
+interface Props {
+  /** Blank in the template row that new purchases are cloned from. */
+  price?: number | null;
+  quantity?: number | null;
+  /** 1-based position, used only for the labels a screen reader reads. */
+  index: number;
+  symbol: string;
+  /** The last remaining row cannot be removed — there would be nothing to average. */
+  removable?: boolean;
+}
+
+const { price = null, quantity = null, index, symbol, removable = true } = Astro.props;
+
+/**
+ * One purchase.
+ *
+ * Rows are repeated and can be added or removed at will, so the inputs carry
+ * `aria-label`s instead of `<label for>` — cloned ids would collide, and the
+ * controller would have to renumber them on every change. The column headings in
+ * `LotRows` say the same thing visually.
+ */
+const INPUT_CLASSES = [
+  'figures h-11 w-full rounded-md border border-hairline-strong bg-canvas text-body text-ink',
+  'transition-colors duration-150 outline-none',
+  'hover:border-ink-tertiary focus-visible:border-accent',
+  'aria-invalid:border-loss aria-invalid:bg-loss-wash',
+];
+---
+
+<div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-2" data-lot-row>
+  <div class="relative">
+    <span
+      aria-hidden="true"
+      data-field="currencyPrefix"
+      class="pointer-events-none absolute inset-y-0 left-0 flex w-8 items-center justify-center text-body-sm text-ink-subtle"
+    >
+      {symbol}
+    </span>
+    <input
+      type="text"
+      inputmode="decimal"
+      autocomplete="off"
+      value={price ?? ''}
+      placeholder="0.00"
+      aria-label={`Buy price, purchase ${index}`}
+      data-lot-price
+      class:list={[...INPUT_CLASSES, 'pr-3 pl-8']}
+    />
+  </div>
+
+  <input
+    type="text"
+    inputmode="numeric"
+    autocomplete="off"
+    value={quantity ?? ''}
+    placeholder="0"
+    aria-label={`Quantity, purchase ${index}`}
+    data-lot-qty
+    class:list={[...INPUT_CLASSES, 'px-3']}
+  />
+
+  <button
+    type="button"
+    data-action="remove-lot"
+    aria-label={`Remove purchase ${index}`}
+    disabled={!removable}
+    class="flex h-11 w-9 shrink-0 items-center justify-center rounded-md text-body-lg text-ink-subtle transition-colors duration-150 hover:bg-surface-2 hover:text-loss disabled:pointer-events-none disabled:opacity-30"
+  >
+    <span aria-hidden="true">×</span>
+  </button>
+</div>

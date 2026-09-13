@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decodeState, encodeState, pickOption } from '../url-state';
+import { decodeLots, decodeState, encodeLots, encodeState, pickOption } from '../url-state';
 
 describe('encodeState', () => {
   it('serialises the fields that hold a value', () => {
@@ -45,5 +45,51 @@ describe('pickOption', () => {
   it('falls back when the URL has been hand-edited', () => {
     expect(pickOption('sideways', directions, 'long')).toBe('long');
     expect(pickOption(undefined, directions, 'long')).toBe('long');
+  });
+});
+
+describe('encodeLots', () => {
+  it('writes one row per purchase', () => {
+    expect(
+      encodeLots([
+        { price: 150, quantity: 200 },
+        { price: 120, quantity: 300 },
+      ]),
+    ).toBe('150x200,120x300');
+  });
+
+  it('keeps a half-filled row, so a shared link does not lose what was typed', () => {
+    expect(encodeLots([{ price: 150, quantity: null }])).toBe('150x');
+  });
+
+  it('drops rows with nothing in them', () => {
+    expect(
+      encodeLots([
+        { price: 150, quantity: 200 },
+        { price: null, quantity: null },
+      ]),
+    ).toBe('150x200');
+  });
+});
+
+describe('decodeLots', () => {
+  it('round-trips through encodeLots', () => {
+    const lots = [
+      { price: 150, quantity: 200 },
+      { price: 120.5, quantity: 300 },
+    ];
+    expect(decodeLots(encodeLots(lots))).toEqual(lots);
+  });
+
+  it('skips rows that are not a pair of numbers', () => {
+    expect(decodeLots('150x200,150x,xyz,,120x300')).toEqual([
+      { price: 150, quantity: 200 },
+      { price: 120, quantity: 300 },
+    ]);
+  });
+
+  it('is empty for a missing or blank parameter', () => {
+    expect(decodeLots(undefined)).toEqual([]);
+    expect(decodeLots('')).toEqual([]);
   });
 });

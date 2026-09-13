@@ -45,8 +45,16 @@ import {
   formatPips,
   formatRatio,
   formatRatioShort,
+  formatSignedMoney,
 } from '../lib/format';
-import { FOREX_CHARGE_NOTE, equityChargeNote, resultSummary } from '../lib/notes';
+import {
+  FOREX_CHARGE_NOTE,
+  VERDICT_CHIP_CLASSES,
+  equityChargeNote,
+  resultSummary,
+  verdictTone,
+  verdictWord,
+} from '../lib/notes';
 import { pickOption, readUrlState, writeUrlState } from '../lib/url-state';
 
 const form = document.querySelector<HTMLFormElement>('#rr-form');
@@ -127,6 +135,9 @@ function start(root: HTMLFormElement): void {
   const chargesBody = root.querySelector<HTMLElement>('[data-charges-body]');
   const riskBar = root.querySelector<HTMLElement>('[data-bar="risk"]');
   const rewardBar = root.querySelector<HTMLElement>('[data-bar="reward"]');
+  const breakEvenBar = root.querySelector<HTMLElement>('[data-bar="breakeven"]');
+  const winRateMarker = root.querySelector<HTMLElement>('[data-marker="winrate"]');
+  const verdictBadge = root.querySelector<HTMLElement>('[data-verdict-badge]');
 
   let statusTimer: number | undefined;
   /** Last suggested position size, so the "Use this size" button need not recompute it. */
@@ -232,10 +243,41 @@ function start(root: HTMLFormElement): void {
     }
   }
 
+  /**
+   * The two bars share one scale — the larger side fills its track, the smaller
+   * one reads as a fraction of it — so the ratio is visible without the figures.
+   */
   function setBar(riskShare: number | null): void {
     const share = riskShare == null ? 0.5 : Math.min(Math.max(riskShare, 0), 1);
-    if (riskBar) riskBar.style.width = `${(share * 100).toFixed(1)}%`;
-    if (rewardBar) rewardBar.style.width = `${((1 - share) * 100).toFixed(1)}%`;
+    const peak = Math.max(share, 1 - share) || 1;
+    if (riskBar) riskBar.style.width = `${((share / peak) * 100).toFixed(1)}%`;
+    if (rewardBar) rewardBar.style.width = `${(((1 - share) / peak) * 100).toFixed(1)}%`;
+  }
+
+  /** The break-even threshold on the win-rate track, with the visitor's own rate marked. */
+  function setWinRateMeter(breakEven: number | null, winRatePercent: number | null): void {
+    const breakEvenPct = breakEven == null ? 0 : Math.min(Math.max(breakEven, 0), 1) * 100;
+    const winRatePct = winRatePercent == null ? 0 : Math.min(Math.max(winRatePercent, 0), 100);
+
+    if (breakEvenBar) breakEvenBar.style.width = `${breakEvenPct.toFixed(1)}%`;
+    if (winRateMarker) winRateMarker.style.left = `${winRatePct.toFixed(1)}%`;
+    write('winRateLabel', `${formatNumber(winRatePct, 'INR', { maxDecimals: 1 })}%`);
+  }
+
+  const VERDICT_CLASSES = Object.values(VERDICT_CHIP_CLASSES).flatMap((value) => value.split(' '));
+
+  /** The one-word verdict chip, standing in for the sentence the panel used to carry. */
+  function paintVerdict(ratio: number | null): void {
+    const tone = verdictTone(ratio);
+    write('verdictLabel', verdictWord(ratio));
+
+    for (const node of fields.get('summary') ?? []) node.dataset.verdict = tone;
+
+    if (verdictBadge) {
+      verdictBadge.classList.remove(...VERDICT_CLASSES);
+      verdictBadge.classList.add(...VERDICT_CHIP_CLASSES[tone].split(' '));
+      verdictBadge.dataset.verdict = tone;
+    }
   }
 
   function announce(message: string): void {
@@ -495,8 +537,10 @@ function start(root: HTMLFormElement): void {
           ? 'Fix the highlighted fields to see your result.'
           : 'Enter an entry price, a stop loss, a target and a position size to see your result.',
       );
+      paintVerdict(null);
       paintTone('expectancyMoney', null);
       setBar(null);
+      setWinRateMeter(null, state.winRatePercent);
       reveal('chargesWarning', false);
       if (chargesBody) {
         chargesBody.replaceChildren(emptyChargeRow('Charges appear once the setup is complete.'));
@@ -512,11 +556,11 @@ function start(root: HTMLFormElement): void {
 
     write('grossReward', formatMoney(gross.grossReward, currency));
     write('chargesAtTarget', `−${formatMoney(result.chargesAtTarget.total, currency)}`);
-    write('netReward', formatMoney(result.netReward, currency));
+    write('netReward', formatSignedMoney(result.netReward, currency));
 
     write('grossRisk', formatMoney(gross.grossRisk, currency));
     write('chargesAtStop', `+${formatMoney(result.chargesAtStop.total, currency)}`);
-    write('netRisk', formatMoney(result.netRisk, currency));
+    write('netRisk', formatSignedMoney(-result.netRisk, currency));
 
     if (isForex) {
       write('riskPerUnit', formatPips(pipsFromPrice(gross.riskPerUnit, pair)));
@@ -530,28 +574,24 @@ function start(root: HTMLFormElement): void {
 
     write(
       'chargeDrag',
-      formatPercent(safeDiv(result.chargesAtTarget.total, gross.grossReward), { decimals: 2 }),
+      `${formatPercent(safeDiv(result.chargesAtTarget.total, gross.grossReward), {
+        decimals: 2,
+      })} of gross profit`,
     );
 
     write('summary', resultSummary(result, currency));
-    for (const node of fields.get('summary') ?? []) {
-      node.dataset.verdict =
-        result.netRatio == null
-          ? 'poor'
-          : result.netRatio >= 2
-            ? 'good'
-            : result.netRatio >= 1
-              ? 'fair'
-              : 'poor';
-    }
+    // A reward wiped out by charges has no ratio to quote, but the verdict is not
+    // neutral — it is weak, so it is judged as a ratio of zero.
+    paintVerdict(result.chargesExceedReward ? 0 : result.netRatio);
 
     const spread = result.netRisk + Math.max(result.netReward, 0);
     setBar(spread > 0 ? result.netRisk / spread : null);
+    setWinRateMeter(result.netBreakEvenWinRate, state.winRatePercent);
 
     const winFraction = (state.winRatePercent ?? 0) / 100;
     const money = expectancyInMoney(result.netReward, result.netRisk, winFraction);
     const inR = result.netRatio != null ? expectancyInR(result.netRatio, winFraction) : null;
-    write('expectancyMoney', formatMoney(money, currency));
+    write('expectancyMoney', formatSignedMoney(money, currency));
     paintTone('expectancyMoney', money);
     write(
       'expectancyR',
@@ -568,7 +608,7 @@ function start(root: HTMLFormElement): void {
     write('riskPerUnitLabel', isForex ? 'Risk in pips' : 'Risk per share');
     write('rewardPerUnitLabel', isForex ? 'Reward in pips' : 'Reward per share');
     write('notionalLabel', isForex ? 'Value of one pip' : 'Position value');
-    write('chargeDragLabel', isForex ? 'Costs vs gross profit' : 'Charges vs gross profit');
+    write('chargeDragLabel', isForex ? 'Costs at target' : 'Charges at target');
     write('suggestedUnitLabel', isForex ? 'units' : 'shares');
   }
 

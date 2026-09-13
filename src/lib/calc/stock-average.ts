@@ -149,3 +149,30 @@ export function planToReachAverage(
     impossibleReason: null,
   };
 }
+
+/**
+ * The position you end up holding after following a plan.
+ *
+ * Worth showing rather than assuming: shares come in whole numbers, so rounding
+ * the quantity up lands the average a fraction the far side of the target. A
+ * trader who sees ₹125.99 against a ₹126 target knows the tool rounded in their
+ * favour; one who is only shown the target has to take it on trust.
+ */
+export function averageAfterPlan(
+  result: StockAverageResult,
+  plan: AverageDownPlan,
+  atPrice: number | null,
+): StockAverageResult | null {
+  if (plan.quantityNeeded == null || !isUsableNumber(atPrice)) return null;
+
+  const totalQuantity = result.totalQuantity + plan.quantityNeeded;
+  const totalInvested = result.totalInvested + plan.quantityNeeded * atPrice;
+  if (totalQuantity <= 0) return null;
+
+  return {
+    totalQuantity: roundTo(totalQuantity, 4),
+    totalInvested: round2(totalInvested),
+    averagePrice: roundTo(totalInvested / totalQuantity, 4),
+    lotsUsed: result.lotsUsed + 1,
+  };
+}

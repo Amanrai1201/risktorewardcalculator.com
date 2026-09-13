@@ -1,0 +1,144 @@
+---
+import { WIN_RATE_DEFAULTS } from '../../lib/calc/defaults';
+import { computeWinRate } from '../../lib/calc/win-rate';
+import { currencySymbol, formatPercent, formatSignedMoney } from '../../lib/format';
+import Card from '../ui/Card.astro';
+import Field from '../ui/Field.astro';
+import SegmentedControl from '../ui/SegmentedControl.astro';
+import StickyStrip from './parts/StickyStrip.astro';
+import WinRateResults from './parts/WinRateResults.astro';
+
+/**
+ * The win rate calculator.
+ *
+ * Rendered complete and correct on the server from `WIN_RATE_DEFAULTS`, so the
+ * page is a working example before any JavaScript loads.
+ * `src/scripts/win-rate.ts` then takes over and rewrites every `data-field` on
+ * input.
+ */
+
+const s = WIN_RATE_DEFAULTS;
+
+const result = computeWinRate({
+  wins: s.wins,
+  losses: s.losses,
+  breakEven: s.breakEven,
+  averageWin: s.averageWin,
+  averageLoss: s.averageLoss,
+});
+
+const symbol = currencySymbol(s.currency);
+---
+
+<form
+  id="wr-form"
+  novalidate
+  class="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:items-start lg:gap-6"
+>
+  <StickyStrip
+    items={[
+      { label: 'Win rate', value: formatPercent(result.winRate), field: 'winRate' },
+      {
+        label: 'Expectancy',
+        value: formatSignedMoney(result.expectancy, s.currency),
+        field: 'expectancyMoney',
+        tone: result.expectancy != null && result.expectancy > 0 ? 'gain' : 'loss',
+      },
+    ]}
+  />
+
+  <!-- Inputs -->
+  <div class="space-y-4">
+    <Card title="Your trades" subtitle="From a trading journal, a backtest, or a broker statement.">
+      <div class="space-y-4">
+        <div class="grid gap-4 sm:grid-cols-3">
+          <Field
+            id="wr-wins"
+            name="w"
+            label="Winning trades"
+            value={s.wins}
+            placeholder="0"
+            inputmode="numeric"
+            hint="Closed in profit"
+          />
+          <Field
+            id="wr-losses"
+            name="l"
+            label="Losing trades"
+            value={s.losses}
+            placeholder="0"
+            inputmode="numeric"
+            hint="Closed at a loss"
+          />
+          <Field
+            id="wr-breakeven"
+            name="be"
+            label="Break-even trades"
+            value={s.breakEven}
+            placeholder="0"
+            inputmode="numeric"
+            hint="Scratched, neither way"
+          />
+        </div>
+
+        <p class="text-caption text-ink-subtle">
+          Break-even trades are counted in the total but left out of the win rate — they neither
+          confirm nor contradict the edge.
+        </p>
+      </div>
+    </Card>
+
+    <Card
+      title="Your average win and loss"
+      subtitle="Without these, a win rate cannot say whether the strategy makes money."
+    >
+      <div class="space-y-4">
+        <SegmentedControl
+          name="c"
+          legend="Currency"
+          value={s.currency}
+          options={[
+            { value: 'INR', label: 'Rupees (₹)' },
+            { value: 'USD', label: 'Dollars ($)' },
+          ]}
+        />
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <Field
+            id="wr-avgwin"
+            name="aw"
+            label="Average win"
+            prefix={symbol}
+            prefixField="currencyPrefix"
+            value={s.averageWin}
+            placeholder="0"
+            hint="Average made on a winner"
+          />
+          <Field
+            id="wr-avgloss"
+            name="al"
+            label="Average loss"
+            prefix={symbol}
+            prefixField="currencyPrefix"
+            value={s.averageLoss}
+            placeholder="0"
+            hint="As a positive number"
+          />
+        </div>
+
+        <p class="text-caption text-ink-subtle">
+          Leave both blank to get the win rate on its own, plus the reward-to-risk it demands.
+        </p>
+      </div>
+    </Card>
+  </div>
+
+  <!-- Results -->
+  <div class="mt-4 space-y-4 lg:mt-0">
+    <WinRateResults result={result} wins={s.wins} losses={s.losses} currency={s.currency} />
+  </div>
+</form>
+
+<script>
+  import '../../scripts/win-rate';
+</script>

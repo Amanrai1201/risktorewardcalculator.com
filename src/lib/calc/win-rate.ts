@@ -94,3 +94,55 @@ export function computeWinRate(input: WinRateInput): WinRateResult {
     netResult,
   };
 }
+
+/**
+ * A plain-language verdict on a sample, matching `describeRatio` in shape so the
+ * two calculators can share one badge.
+ *
+ * The judgement is made on expectancy, never on the win rate itself — that is
+ * the whole point of the tool, and a verdict that praised 80% winners at 1:0.5
+ * would contradict every other figure on the page.
+ */
+export function describeWinRate(result: WinRateResult): {
+  tone: 'good' | 'fair' | 'poor';
+  label: string;
+  text: string;
+} {
+  if (result.winRate == null) {
+    return {
+      tone: 'fair',
+      label: '—',
+      text: 'Enter your winning and losing trades to see your win rate.',
+    };
+  }
+
+  if (result.expectancyInR == null) {
+    return {
+      tone: 'fair',
+      label: 'Add averages',
+      text: 'A win rate on its own cannot say whether a strategy makes money. Add your average win and average loss to find out.',
+    };
+  }
+
+  if (result.expectancyInR > 0) {
+    return {
+      tone: 'good',
+      label: 'Profitable',
+      text: 'Repeating this at the same size makes money, because the winners are large enough to cover the losers.',
+    };
+  }
+
+  if (result.expectancyInR === 0) {
+    return {
+      tone: 'fair',
+      label: 'Break-even',
+      text: 'The winners exactly cover the losers, so this strategy goes nowhere once costs are counted.',
+    };
+  }
+
+  return {
+    tone: 'poor',
+    label: 'Losing',
+    text: 'The losers outweigh the winners, so this loses money however long you run it. You need bigger wins or more of them.',
+  };
+}

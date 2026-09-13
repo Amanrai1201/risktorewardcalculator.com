@@ -1,13 +1,20 @@
 ---
 import type { CurrencyCode, NetResult } from '../../../lib/calc/types';
-import { describeRatio, expectancyInMoney, expectancyInR } from '../../../lib/calc/risk-reward';
-import { formatMoney, formatPercent, formatRatio, formatRatioShort } from '../../../lib/format';
-import { resultSummary } from '../../../lib/notes';
+import { expectancyInMoney, expectancyInR } from '../../../lib/calc/risk-reward';
+import {
+  formatMoney,
+  formatPercent,
+  formatRatio,
+  formatRatioShort,
+  formatSignedMoney,
+} from '../../../lib/format';
+import { resultSummary, verdictTone, verdictWord, VERDICT_CHIP_CLASSES } from '../../../lib/notes';
 import Card from '../../ui/Card.astro';
 import Callout from '../../ui/Callout.astro';
 import StatTile from '../../ui/StatTile.astro';
 import Button from '../../ui/Button.astro';
 import RiskRewardBar from './RiskRewardBar.astro';
+import WinRateMeter from './WinRateMeter.astro';
 
 interface Props {
   result: NetResult;
@@ -23,7 +30,6 @@ const { gross } = result;
 const winFraction = winRatePercent / 100;
 const expectancy = expectancyInMoney(result.netReward, result.netRisk, winFraction);
 const expectancyR = result.netRatio != null ? expectancyInR(result.netRatio, winFraction) : null;
-const verdict = describeRatio(result.netRatio);
 
 const riskShare =
   result.netRisk + result.netReward > 0
@@ -33,6 +39,17 @@ const riskShare =
 const chargeDrag = gross.grossReward > 0 ? result.chargesAtTarget.total / gross.grossReward : null;
 
 const summary = resultSummary(result, currency);
+
+/**
+ * A reward wiped out by charges has no ratio to quote, but the verdict is not
+ * neutral — it is weak, so it is judged as a ratio of zero.
+ */
+const verdictRatio = result.chargesExceedReward ? 0 : result.netRatio;
+const tone = verdictTone(verdictRatio);
+
+/** Signed money, so profit and loss are told apart before the colour is read. */
+const netRewardLabel = formatSignedMoney(result.netReward, currency);
+const netRiskLabel = formatSignedMoney(-result.netRisk, currency);
 
 /** Expectancy is the one figure whose colour flips with its sign. */
 const expectancyTone =
@@ -44,6 +61,20 @@ const expectancyTone =
 ---
 
 <Card title="Your result" subtitle="Recalculates as you type. Charges included.">
+  {/* The verdict, as a chip rather than a sentence. */}
+  <span
+    slot="header"
+    class:list={[
+      'inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-caption font-semibold',
+      VERDICT_CHIP_CLASSES[tone],
+    ]}
+    data-verdict-badge
+    data-verdict={tone}
+  >
+    <span class="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true"></span>
+    <span data-field="verdictLabel">{verdictWord(verdictRatio)}</span>
+  </span>
+
   <div class="space-y-5">
     <div class="grid grid-cols-2 gap-3">
       <StatTile
@@ -53,6 +84,7 @@ const expectancyTone =
         hintField="grossRatio"
         field="netRatio"
         size="lg"
+        tone="accent"
         emphasis
       />
       <StatTile
@@ -65,23 +97,21 @@ const expectancyTone =
       />
     </div>
 
-    <RiskRewardBar riskShare={riskShare} />
+    <RiskRewardBar riskShare={riskShare} riskValue={netRiskLabel} rewardValue={netRewardLabel} />
 
-    {/* The single live region: one concise sentence, so nothing is announced twice. */}
-    <p
-      role="status"
-      aria-live="polite"
-      class="text-body-sm text-ink-muted"
-      data-field="summary"
-      data-verdict={verdict.tone}
-    >
+    {/*
+      The figures above carry the answer visually. This is the same answer as one
+      sentence for screen readers — the single live region, so nothing is
+      announced twice.
+    */}
+    <p role="status" aria-live="polite" class="sr-only" data-field="summary" data-verdict={tone}>
       {summary}
     </p>
 
     {/* Gross → charges → net, spelled out for both outcomes. */}
     <div class="grid gap-3 sm:grid-cols-2">
-      <div class="rounded-md border border-hairline p-3">
-        <p class="text-eyebrow uppercase text-ink-subtle">If your target hits</p>
+      <div class="rounded-md border border-hairline bg-surface-1 p-3">
+        <p class="text-eyebrow uppercase text-gain">If target hits</p>
         <dl class="mt-2 space-y-1.5 text-body-sm">
           <div class="flex items-baseline justify-between gap-3">
             <dt class="text-ink-muted">Gross profit</dt>
@@ -90,22 +120,22 @@ const expectancyTone =
             </dd>
           </div>
           <div class="flex items-baseline justify-between gap-3">
-            <dt class="text-ink-muted">Estimated charges</dt>
+            <dt class="text-ink-muted">Charges</dt>
             <dd class="figures text-loss" data-field="chargesAtTarget">
               −{formatMoney(result.chargesAtTarget.total, currency)}
             </dd>
           </div>
-          <div class="flex items-baseline justify-between gap-3 border-t border-hairline pt-1.5 font-semibold">
-            <dt class="text-ink">Net profit</dt>
+          <div class="flex items-baseline justify-between gap-3 border-t border-hairline pt-1.5">
+            <dt class="font-semibold text-ink">Net profit</dt>
             <dd class="figures text-figure text-gain" data-field="netReward">
-              {formatMoney(result.netReward, currency)}
+              {netRewardLabel}
             </dd>
           </div>
         </dl>
       </div>
 
-      <div class="rounded-md border border-hairline p-3">
-        <p class="text-eyebrow uppercase text-ink-subtle">If your stop hits</p>
+      <div class="rounded-md border border-hairline bg-surface-1 p-3">
+        <p class="text-eyebrow uppercase text-loss">If stop hits</p>
         <dl class="mt-2 space-y-1.5 text-body-sm">
           <div class="flex items-baseline justify-between gap-3">
             <dt class="text-ink-muted">Gross loss</dt>
@@ -114,28 +144,29 @@ const expectancyTone =
             </dd>
           </div>
           <div class="flex items-baseline justify-between gap-3">
-            <dt class="text-ink-muted">Estimated charges</dt>
+            <dt class="text-ink-muted">Charges</dt>
             <dd class="figures text-loss" data-field="chargesAtStop">
               +{formatMoney(result.chargesAtStop.total, currency)}
             </dd>
           </div>
-          <div class="flex items-baseline justify-between gap-3 border-t border-hairline pt-1.5 font-semibold">
-            <dt class="text-ink">Net loss</dt>
+          <div class="flex items-baseline justify-between gap-3 border-t border-hairline pt-1.5">
+            <dt class="font-semibold text-ink">Net loss</dt>
             <dd class="figures text-figure text-loss" data-field="netRisk">
-              {formatMoney(result.netRisk, currency)}
+              {netRiskLabel}
             </dd>
           </div>
         </dl>
       </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-x-4 gap-y-3 border-t border-hairline pt-4 sm:grid-cols-4">
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
       <StatTile
         label={`Risk per ${unitLabel}`}
         labelField="riskPerUnitLabel"
         value={formatMoney(gross.riskPerUnit, currency)}
         field="riskPerUnit"
         size="sm"
+        emphasis
       />
       <StatTile
         label={`Reward per ${unitLabel}`}
@@ -143,6 +174,7 @@ const expectancyTone =
         value={formatMoney(gross.rewardPerUnit, currency)}
         field="rewardPerUnit"
         size="sm"
+        emphasis
       />
       <StatTile
         label="Position value"
@@ -150,44 +182,30 @@ const expectancyTone =
         value={formatMoney(gross.entryValue, currency, { decimals: 0 })}
         field="entryValue"
         size="sm"
+        emphasis
       />
       <StatTile
-        label="Charges vs gross profit"
+        label="Charges at target"
         labelField="chargeDragLabel"
-        value={formatPercent(chargeDrag, { decimals: 2 })}
-        field="chargeDrag"
+        value={formatMoney(result.chargesAtTarget.total, currency)}
+        field="totalAtTarget"
+        hint={`${formatPercent(chargeDrag, { decimals: 2 })} of gross profit`}
+        hintField="chargeDrag"
         size="sm"
+        emphasis
       />
     </div>
 
-    {/* Expectancy, driven by the visitor's own win rate. */}
-    <div class="rounded-md bg-surface-1 p-3">
-      <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-body-sm text-ink-muted">
-        <label for="rr-winrate" class="text-ink">
-          Expectancy if you win
-        </label>
-        <input
-          id="rr-winrate"
-          name="wr"
-          type="text"
-          inputmode="decimal"
-          autocomplete="off"
-          value={winRatePercent}
-          class="figures h-9 w-16 rounded-md border border-hairline-strong bg-canvas px-2 text-center text-body text-ink outline-none hover:border-ink-tertiary focus-visible:border-accent"
-        />
-        <span>% of these trades</span>
-      </p>
-      <p class="mt-2 flex flex-wrap items-baseline gap-x-2 text-body-sm">
-        <span class:list={['figures text-figure', expectancyTone]} data-field="expectancyMoney">
-          {formatMoney(expectancy, currency)}
-        </span>
-        <span class="text-ink-subtle">per trade on average</span>
-        <span class="figures text-ink-muted" data-field="expectancyR">
-          ({expectancyR != null && expectancyR > 0 ? '+' : ''}
-          {formatRatioShort(expectancyR != null ? Math.abs(expectancyR) : null)})
-        </span>
-      </p>
-    </div>
+    <WinRateMeter
+      breakEven={result.netBreakEvenWinRate}
+      breakEvenLabel={formatPercent(result.netBreakEvenWinRate)}
+      winRatePercent={winRatePercent}
+      expectancyLabel={formatSignedMoney(expectancy, currency)}
+      expectancyTone={expectancyTone}
+      expectancyRLabel={`(${expectancyR != null && expectancyR > 0 ? '+' : ''}${formatRatioShort(
+        expectancyR != null ? Math.abs(expectancyR) : null,
+      )})`}
+    />
 
     <Callout tone="warn" title="Charges swallow this trade" field="chargesWarning" hidden>
       Estimated charges are larger than the profit at your target, so this setup loses money even

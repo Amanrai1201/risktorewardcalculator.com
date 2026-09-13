@@ -1,5 +1,5 @@
 ---
-type Tone = 'neutral' | 'gain' | 'loss' | 'muted';
+type Tone = 'neutral' | 'accent' | 'gain' | 'loss' | 'muted';
 
 interface Props {
   label: string;
@@ -35,6 +35,7 @@ const {
 
 const TONE_TEXT: Record<Tone, string> = {
   neutral: 'text-ink',
+  accent: 'text-ink',
   gain: 'text-gain',
   loss: 'text-loss',
   muted: 'text-ink-muted',
@@ -42,6 +43,8 @@ const TONE_TEXT: Record<Tone, string> = {
 
 const TONE_WASH: Record<Tone, string> = {
   neutral: 'bg-surface-1',
+  // The one figure that leads the whole panel gets a ring as well as a wash.
+  accent: 'bg-accent/5 ring-1 ring-accent/20',
   gain: 'bg-gain-wash',
   loss: 'bg-loss-wash',
   muted: 'bg-surface-1',

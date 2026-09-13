@@ -1,0 +1,191 @@
+---
+import type { CurrencyCode } from '../../../lib/calc/types';
+import { describeWinRate, type WinRateResult } from '../../../lib/calc/win-rate';
+import {
+  formatNumber,
+  formatPercent,
+  formatRatio,
+  formatSignedMoney,
+  formatSignedR,
+} from '../../../lib/format';
+import { winRateMargin, winRateSummary } from '../../../lib/notes';
+import Button from '../../ui/Button.astro';
+import Callout from '../../ui/Callout.astro';
+import Card from '../../ui/Card.astro';
+import StatTile from '../../ui/StatTile.astro';
+import VerdictChip from '../../ui/VerdictChip.astro';
+import BreakEvenTrack from './BreakEvenTrack.astro';
+
+interface Props {
+  result: WinRateResult;
+  /** The raw counts, for the "40 of 100 decided trades" line. */
+  wins: number;
+  losses: number;
+  currency: CurrencyCode;
+}
+
+const { result, wins, losses, currency } = Astro.props;
+
+const verdict = describeWinRate(result);
+const margin = winRateMargin(result);
+
+/**
+ * Expectancy is the one figure whose colour flips with its sign, so it is not a
+ * `StatTile` — a tile's wash is fixed at render time and the controller has no
+ * way to repaint it.
+ */
+const expectancyTone =
+  result.expectancy == null || result.expectancy === 0
+    ? 'text-ink-muted'
+    : result.expectancy > 0
+      ? 'text-gain'
+      : 'text-loss';
+
+const netResultTone =
+  result.netResult == null || result.netResult === 0
+    ? 'text-ink-muted'
+    : result.netResult > 0
+      ? 'text-gain'
+      : 'text-loss';
+
+const isLosing = result.expectancyInR != null && result.expectancyInR < 0;
+---
+
+<Card title="Your result" subtitle="Recalculates as you type.">
+  <VerdictChip slot="header" tone={verdict.tone} label={verdict.label} />
+
+  <div class="space-y-5">
+    <div class="grid grid-cols-2 gap-3">
+      <StatTile
+        label="Win rate"
+        value={formatPercent(result.winRate)}
+        hint={`${formatNumber(wins)} of ${formatNumber(wins + losses)} decided trades`}
+        hintField="winRateHint"
+        field="winRate"
+        size="lg"
+        tone="accent"
+        emphasis
+      />
+      <StatTile
+        label="Break-even win rate"
+        value={formatPercent(result.breakEvenWinRate)}
+        hint="at your reward : risk"
+        field="breakEvenWinRate"
+        size="lg"
+        emphasis
+      />
+    </div>
+
+    <BreakEvenTrack
+      breakEven={result.breakEvenWinRate}
+      breakEvenLabel={formatPercent(result.breakEvenWinRate)}
+      winRate={result.winRate}
+      winRateLabel={formatPercent(result.winRate)}
+      marginLabel={margin.text}
+      marginTone={margin.tone}
+    />
+
+    {/*
+      The figures above carry the answer visually. This is the same answer as one
+      sentence for screen readers — the single live region, so nothing is
+      announced twice.
+    */}
+    <p
+      role="status"
+      aria-live="polite"
+      class="sr-only"
+      data-field="summary"
+      data-verdict={verdict.tone}
+    >
+      {winRateSummary(result, currency)}
+    </p>
+
+    {/* The figure the whole page is built to produce. */}
+    <div class="rounded-md border border-hairline bg-surface-1 p-3">
+      <p class="text-eyebrow uppercase text-ink-subtle">Expectancy</p>
+      <p class="mt-1 flex flex-wrap items-baseline gap-x-2">
+        <span class:list={['figures text-figure-lg', expectancyTone]} data-field="expectancyMoney">
+          {formatSignedMoney(result.expectancy, currency)}
+        </span>
+        <span class="figures text-body-sm text-ink-muted" data-field="expectancyR">
+          ({formatSignedR(result.expectancyInR)})
+        </span>
+        <span class="text-body-sm text-ink-subtle">per trade on average</span>
+      </p>
+      <p class="mt-3 border-t border-hairline pt-3 text-body-sm text-ink-muted">
+        Across{' '}
+        <span class="figures text-ink" data-field="totalTrades">
+          {formatNumber(result.totalTrades)}
+        </span>{' '}
+        trades that is{' '}
+        <span class:list={['figures font-semibold', netResultTone]} data-field="netResult">
+          {formatSignedMoney(result.netResult, currency)}
+        </span>
+        .
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <StatTile
+        label="Realised reward : risk"
+        value={formatRatio(result.rewardToRisk)}
+        hint="Avg win ÷ avg loss"
+        field="rewardToRisk"
+        size="sm"
+        emphasis
+      />
+      <StatTile
+        label="Ratio you need"
+        value={formatRatio(result.breakEvenRatio)}
+        hint="to break even at this rate"
+        field="breakEvenRatio"
+        size="sm"
+        emphasis
+      />
+      <StatTile
+        label="Loss rate"
+        value={formatPercent(result.lossRate)}
+        hint="of decided trades"
+        field="lossRate"
+        size="sm"
+        emphasis
+      />
+      <StatTile
+        label="Win rate, all trades"
+        value={formatPercent(result.winRateOfAll)}
+        hint="break-even trades included"
+        field="winRateOfAll"
+        size="sm"
+        emphasis
+      />
+    </div>
+
+    <p class="text-body-sm text-ink-muted" data-field="verdictText">
+      {verdict.text}
+    </p>
+
+    <Callout tone="warn" title="This sample loses money" field="losingWarning" hidden={!isLosing}>
+      Your win rate is below the rate this reward-to-risk demands, so repeating these trades at the
+      same size loses money however long you run it. Closing the gap takes larger winners or smaller
+      losers — winning more often is only one of the three ways out.
+    </Callout>
+  </div>
+
+  <div class="mt-5 flex flex-wrap items-center gap-2 border-t border-hairline pt-4">
+    <Button variant="secondary" size="sm" data-action="copy-result">
+      Copy result
+    </Button>
+    <Button variant="secondary" size="sm" data-action="copy-link">
+      Copy link
+    </Button>
+    <Button variant="ghost" size="sm" data-action="reset">
+      Reset
+    </Button>
+    <p
+      class="text-caption text-ink-subtle"
+      role="status"
+      aria-live="polite"
+      data-field="actionStatus"
+    ></p>
+  </div>
+</Card>

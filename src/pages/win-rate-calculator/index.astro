@@ -1,0 +1,212 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WinRateCalculator from '../../components/calculator/WinRateCalculator.astro';
+import FaqSection from '../../components/site/FaqSection.astro';
+import RatioTable from '../../components/site/RatioTable.astro';
+import RelatedCalculators from '../../components/site/RelatedCalculators.astro';
+import Section from '../../components/site/Section.astro';
+import Card from '../../components/ui/Card.astro';
+import DefinitionList from '../../components/ui/DefinitionList.astro';
+import { getCalculator } from '../../data/calculators';
+import { WIN_RATE_FAQS } from '../../data/faqs';
+import { WIN_RATE_DEFAULTS } from '../../lib/calc/defaults';
+import { computeWinRate } from '../../lib/calc/win-rate';
+import {
+  formatMoney,
+  formatNumber,
+  formatPercent,
+  formatRatio,
+  formatSignedMoney,
+  formatSignedR,
+} from '../../lib/format';
+import { breadcrumbs, faqPage, webApplication } from '../../lib/schema';
+
+const calculator = getCalculator('win-rate');
+
+const title = 'Win Rate Calculator: Expectancy and Break-even Win Rate';
+const description =
+  'Free win rate calculator. Turn your wins and losses into a win rate, expectancy per trade, and the win rate your reward-to-risk actually needs to break even.';
+
+const jsonLd = [
+  webApplication({ name: calculator.name, description, path: calculator.href }),
+  faqPage(WIN_RATE_FAQS),
+  breadcrumbs([
+    { name: 'Home', path: '/' },
+    { name: calculator.shortName, path: calculator.href },
+  ]),
+];
+
+/**
+ * The walkthrough runs on the same defaults the form ships with, and through the
+ * same engine, so the prose can never quote a number the tool disagrees with.
+ */
+const d = WIN_RATE_DEFAULTS;
+const example = computeWinRate({
+  wins: d.wins,
+  losses: d.losses,
+  breakEven: d.breakEven,
+  averageWin: d.averageWin,
+  averageLoss: d.averageLoss,
+});
+
+const money = (value: number | null) => formatMoney(value, d.currency);
+const decided = d.wins + d.losses;
+
+const steps = [
+  `${formatNumber(d.wins)} winners against ${formatNumber(d.losses)} losers is ${formatNumber(decided)} decided trades, so the win rate is ${formatPercent(example.winRate)}.`,
+  `Winners averaged ${money(d.averageWin)} and losers ${money(d.averageLoss)}, which is a realised reward-to-risk of ${formatRatio(example.rewardToRisk)}.`,
+  `At ${formatRatio(example.rewardToRisk)} the sample only needs ${formatPercent(example.breakEvenWinRate)} of trades to win to stay flat — ${formatPercent(example.winRate)} clears that line.`,
+  `Expectancy is ${formatPercent(example.winRate)} of ${money(d.averageWin)} minus ${formatPercent(example.lossRate)} of ${money(d.averageLoss)}, or ${formatSignedMoney(example.expectancy, d.currency)} a trade (${formatSignedR(example.expectancyInR)}). Across ${formatNumber(example.totalTrades)} trades that is ${formatSignedMoney(example.netResult, d.currency)}.`,
+];
+
+const FORMULAS = [
+  { term: 'Win rate', detail: 'Wins ÷ (Wins + Losses)' },
+  { term: 'Loss rate', detail: 'Losses ÷ (Wins + Losses)' },
+  { term: 'Realised reward : risk', detail: 'Average win ÷ Average loss' },
+  { term: 'Expectancy', detail: '(Win rate × Average win) − (Loss rate × Average loss)' },
+  { term: 'Expectancy in R', detail: '(Win rate × Reward-to-risk) − Loss rate' },
+  { term: 'Break-even win rate', detail: '1 ÷ (1 + Reward-to-risk)' },
+  { term: 'Reward : risk you need', detail: 'Loss rate ÷ Win rate' },
+];
+
+const READING = [
+  {
+    term: 'Win rate',
+    detail:
+      'The share of decided trades that closed in profit. Break-even trades are counted in the total but kept out of this figure.',
+  },
+  {
+    term: 'Break-even win rate',
+    detail:
+      'The win rate your realised reward-to-risk demands. Above the line the strategy makes money; below it, it does not.',
+  },
+  {
+    term: 'Expectancy',
+    detail:
+      'What one more trade of this type is worth on average, in money and in R. It is the only figure here that settles whether to keep trading the setup.',
+  },
+  {
+    term: 'Reward : risk you need',
+    detail:
+      'The other way out. If the win rate cannot be raised, this is the ratio that would make the same win rate profitable.',
+  },
+];
+---
+
+<BaseLayout {title} {description} path={calculator.href} {jsonLd}>
+  <section class="container-page pt-8 pb-10 sm:pt-10 sm:pb-12">
+    <div class="max-w-prose">
+      <h1 class="text-display-lg">Win Rate Calculator</h1>
+      <p class="mt-3 text-body-lg text-ink-muted">
+        Put in your wins and losses. You get your win rate, the rate your average win and loss
+        actually require, and what one more trade of the same type is worth.
+      </p>
+    </div>
+
+    <div class="mt-6 sm:mt-8">
+      <WinRateCalculator />
+    </div>
+  </section>
+
+  <Section
+    id="how-it-works"
+    title="How the numbers are worked out"
+    lead="Four lines of arithmetic, and nothing hidden behind the result."
+  >
+    <div class="grid gap-4 lg:grid-cols-2">
+      <Card title="The formulas" headingLevel={3}>
+        <DefinitionList items={FORMULAS} variant="formula" />
+        <p class="mt-4 text-caption text-ink-subtle">
+          R is simply your average loss. Quoting expectancy in R makes two strategies comparable
+          even when they are traded at different sizes.
+        </p>
+      </Card>
+
+      <Card title="The example above, step by step" headingLevel={3}>
+        <ol class="space-y-3 text-body-sm text-ink-muted">
+          {steps.map((step, index) => (
+            <li class="flex gap-3">
+              <span class="figures mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-surface-2 text-caption font-semibold text-ink">
+                {index + 1}
+              </span>
+              <span>{step}</span>
+            </li>
+          ))}
+        </ol>
+      </Card>
+    </div>
+  </Section>
+
+  <Section
+    id="what-it-means"
+    title="Why the win rate on its own proves nothing"
+    tone="surface"
+    lead="A rate is half a sentence. The other half is what a winner is worth next to a loser."
+  >
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-8">
+      <div class="max-w-prose space-y-4 text-body text-ink-muted">
+        <p>
+          Two traders can post the same 40 per cent win rate and end the year in opposite places.
+          The one whose winners are three times the size of the losers is comfortably ahead; the one
+          whose winners are half the size of the losers has spent the year giving money away. The
+          rate is identical, and it tells you nothing until you attach the two averages.
+        </p>
+        <p>
+          That is why this page leads with the gap between two percentages rather than with the win
+          rate itself. The break-even win rate is the line your reward-to-risk draws, and the only
+          question that matters is which side of it you are on. When the gap is negative there are
+          three ways to close it — win more often, make more on the winners, or lose less on the
+          losers — and the last two are usually the ones you can actually control.
+        </p>
+        <p>
+          Sample size decides how much of this to believe. A few dozen trades give you a rough
+          sense; a hundred or more before you act on the figure. The first ten trades of a losing
+          strategy look very much like the first ten of a winning one.
+        </p>
+      </div>
+
+      <Card title="Reading the result" headingLevel={3}>
+        <DefinitionList items={READING} />
+      </Card>
+    </div>
+  </Section>
+
+  <Section
+    id="break-even"
+    title="The win rate each ratio needs"
+    lead="Every reward-to-risk sets its own pass mark. This is the table, row by row."
+  >
+    <RatioTable />
+
+    <div class="mt-6 max-w-prose space-y-4 text-body text-ink-muted">
+      <p>
+        Read this table in the direction that suits the problem. If your win rate is fixed by the
+        kind of setup you trade, it tells you the ratio you have to hold out for. If the ratio is
+        fixed by where your stop and target have to sit, it tells you the win rate you need to
+        record before the approach is worth repeating.
+      </p>
+      <p>
+        Both figures are gross. Brokerage and taxes push every row a little higher, which is why a
+        strategy that looks like it clears break-even by a point or two often does not. The{' '}
+        <a
+          href="/"
+          class="text-ink underline decoration-hairline-strong underline-offset-2 hover:text-ink-muted"
+        >
+          risk to reward calculator
+        </a>{' '}
+        prices those charges into the same break-even figure.
+      </p>
+    </div>
+  </Section>
+
+  <Section
+    id="calculators"
+    title="Other calculators"
+    lead="Same approach, different question."
+    tone="surface"
+  >
+    <RelatedCalculators current="win-rate" />
+  </Section>
+
+  <FaqSection faqs={WIN_RATE_FAQS} title="Win rate, answered" />
+</BaseLayout>

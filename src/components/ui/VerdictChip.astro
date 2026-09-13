@@ -1,0 +1,33 @@
+---
+import { VERDICT_CHIP_CLASSES } from '../../lib/notes';
+
+/**
+ * The one-word verdict, as a chip rather than a sentence.
+ *
+ * Shared by every calculator that carries a judgement, so the tone colours and
+ * the `data-verdict` hook their controllers repaint are declared in one place.
+ */
+
+interface Props {
+  tone: keyof typeof VERDICT_CHIP_CLASSES;
+  label: string;
+  /** `data-field` hook for the label text. */
+  field?: string;
+  class?: string;
+}
+
+const { tone, label, field = 'verdictLabel', class: className } = Astro.props;
+---
+
+<span
+  class:list={[
+    'inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-caption font-semibold',
+    VERDICT_CHIP_CLASSES[tone],
+    className,
+  ]}
+  data-verdict-badge
+  data-verdict={tone}
+>
+  <span class="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true"></span>
+  <span data-field={field}>{label}</span>
+</span>

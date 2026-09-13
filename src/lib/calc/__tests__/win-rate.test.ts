@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeWinRate } from '../win-rate';
+import { computeWinRate, describeWinRate } from '../win-rate';
 
 describe('computeWinRate', () => {
   // 100 trades, 40 winners at ₹300, 60 losers at ₹100.
@@ -78,5 +78,39 @@ describe('computeWinRate', () => {
     const perfect = computeWinRate({ wins: 10, losses: 0 });
     expect(perfect.winRate).toBe(1);
     expect(perfect.breakEvenRatio).toBeNull();
+  });
+});
+
+describe('describeWinRate', () => {
+  it('judges on expectancy, not on the win rate', () => {
+    // 80% winners, but a winner is worth a fifth of a loser — break-even needs 83%.
+    const flattering = computeWinRate({ wins: 80, losses: 20, averageWin: 20, averageLoss: 100 });
+    expect(describeWinRate(flattering).tone).toBe('poor');
+
+    // 35% winners at 1:3 — the inverse case.
+    const unflattering = computeWinRate({
+      wins: 35,
+      losses: 65,
+      averageWin: 300,
+      averageLoss: 100,
+    });
+    expect(describeWinRate(unflattering).tone).toBe('good');
+  });
+
+  it('calls a zero-expectancy sample break-even', () => {
+    // 25% winners at 1:3 is exactly the break-even rate.
+    const scratch = computeWinRate({ wins: 25, losses: 75, averageWin: 300, averageLoss: 100 });
+    expect(scratch.expectancyInR).toBe(0);
+    expect(describeWinRate(scratch)).toMatchObject({ tone: 'fair', label: 'Break-even' });
+  });
+
+  it('asks for the averages rather than guessing without them', () => {
+    const rateOnly = computeWinRate({ wins: 40, losses: 60 });
+    expect(describeWinRate(rateOnly).label).toBe('Add averages');
+  });
+
+  it('stays neutral on an empty sample', () => {
+    const empty = computeWinRate({ wins: 0, losses: 0 });
+    expect(describeWinRate(empty)).toMatchObject({ tone: 'fair', label: '—' });
   });
 });

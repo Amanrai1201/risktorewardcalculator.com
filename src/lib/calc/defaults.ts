@@ -1,10 +1,11 @@
-import type { Direction, Exchange, MarketId, SegmentId } from './types';
+import type { CurrencyCode, Direction, Exchange, MarketId, SegmentId } from './types';
 import { getPair, type LotType } from './forex';
+import type { PurchaseLot } from './stock-average';
 
 /**
- * Starting values for the risk-to-reward calculator.
+ * Starting values for every calculator.
  *
- * The form ships filled in with a worked example rather than empty. The page
+ * Each form ships filled in with a worked example rather than empty. The page
  * then renders a complete, correct result server-side — it is useful before any
  * JavaScript runs, and a visitor can see what the tool does before typing.
  */
@@ -87,3 +88,49 @@ export function equityPrices(direction: Direction): {
     ? { entry: 100, stop: 95, target: 115 }
     : { entry: 100, stop: 105, target: 85 };
 }
+
+export interface WinRateState {
+  currency: CurrencyCode;
+  wins: number;
+  losses: number;
+  breakEven: number;
+  averageWin: number;
+  averageLoss: number;
+}
+
+/**
+ * A sample that makes the calculator's point on sight: 40 winners in 100 looks
+ * like a failing strategy until the ₹300 average win against the ₹100 average
+ * loss puts expectancy at +₹60 a trade.
+ */
+export const WIN_RATE_DEFAULTS: WinRateState = {
+  currency: 'INR',
+  wins: 40,
+  losses: 60,
+  breakEven: 0,
+  averageWin: 300,
+  averageLoss: 100,
+};
+
+export interface StockAverageState {
+  currency: CurrencyCode;
+  lots: PurchaseLot[];
+  currentPrice: number;
+  buyAtPrice: number;
+  targetAverage: number;
+}
+
+/**
+ * Two unequal buys, so the average lands at ₹132 rather than the ₹135 midpoint
+ * — the weighting is the thing people come here to check.
+ */
+export const STOCK_AVERAGE_DEFAULTS: StockAverageState = {
+  currency: 'INR',
+  lots: [
+    { price: 150, quantity: 200 },
+    { price: 120, quantity: 300 },
+  ],
+  currentPrice: 126,
+  buyAtPrice: 110,
+  targetAverage: 126,
+};

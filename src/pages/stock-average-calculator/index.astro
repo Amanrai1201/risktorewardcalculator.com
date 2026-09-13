@@ -1,0 +1,211 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import StockAverageCalculator from '../../components/calculator/StockAverageCalculator.astro';
+import FaqSection from '../../components/site/FaqSection.astro';
+import RelatedCalculators from '../../components/site/RelatedCalculators.astro';
+import Section from '../../components/site/Section.astro';
+import Card from '../../components/ui/Card.astro';
+import DefinitionList from '../../components/ui/DefinitionList.astro';
+import { getCalculator } from '../../data/calculators';
+import { STOCK_AVERAGE_FAQS } from '../../data/faqs';
+import { STOCK_AVERAGE_DEFAULTS } from '../../lib/calc/defaults';
+import {
+  averageAfterPlan,
+  computeStockAverage,
+  planToReachAverage,
+  summarisePosition,
+} from '../../lib/calc/stock-average';
+import { formatMoney, formatNumber, formatPercent, formatPrice } from '../../lib/format';
+import { breadcrumbs, faqPage, webApplication } from '../../lib/schema';
+
+const calculator = getCalculator('stock-average');
+
+const title = 'Stock Average Calculator: Weighted Average Buy Price';
+const description =
+  'Free stock average calculator. Combine any number of buys into one weighted average price, see your unrealised profit or loss, and find how many shares it takes to reach a target average.';
+
+const jsonLd = [
+  webApplication({ name: calculator.name, description, path: calculator.href }),
+  faqPage(STOCK_AVERAGE_FAQS),
+  breadcrumbs([
+    { name: 'Home', path: '/' },
+    { name: calculator.shortName, path: calculator.href },
+  ]),
+];
+
+/**
+ * The walkthrough runs on the same defaults the form ships with, and through the
+ * same engine, so the prose can never quote a number the tool disagrees with.
+ */
+const d = STOCK_AVERAGE_DEFAULTS;
+const example = computeStockAverage(d.lots);
+const position = summarisePosition(example, d.currentPrice);
+const plan = planToReachAverage(example, d.buyAtPrice, d.targetAverage);
+const after = averageAfterPlan(example, plan, d.buyAtPrice);
+
+const money = (value: number | null) => formatMoney(value, d.currency);
+const price = (value: number | null) => formatPrice(value, d.currency);
+
+const [first, second] = d.lots;
+const midpoint = (first.price + second.price) / 2;
+
+const steps = [
+  `${formatNumber(first.quantity)} shares at ${price(first.price)} cost ${money(first.price * first.quantity)}, and ${formatNumber(second.quantity)} at ${price(second.price)} cost ${money(second.price * second.quantity)}.`,
+  `That is ${money(example.totalInvested)} for ${formatNumber(example.totalQuantity)} shares, an average of ${price(example.averagePrice)} — not the ${price(midpoint)} midpoint, because the larger purchase pulls the figure towards its own price.`,
+  `At ${price(d.currentPrice)} the holding is worth ${money(position.marketValue)}, which is ${money(Math.abs(position.unrealised ?? 0))} ${(position.unrealised ?? 0) < 0 ? 'below' : 'above'} what you paid (${formatPercent(position.unrealisedFraction)}).`,
+  `Bringing the average down to ${price(d.targetAverage)} by buying at ${price(d.buyAtPrice)} takes ${formatNumber(plan.quantityNeeded)} more shares, or ${money(plan.investmentNeeded)}. That lands the average at ${price(after?.averagePrice ?? null)} across ${formatNumber(after?.totalQuantity ?? null)} shares — a fraction under the target, because shares are bought whole.`,
+];
+
+const FORMULAS = [
+  { term: 'Cost of one purchase', detail: 'Buy price × Quantity' },
+  { term: 'Total invested', detail: 'Sum of every purchase cost' },
+  { term: 'Shares held', detail: 'Sum of every quantity' },
+  { term: 'Average buy price', detail: 'Total invested ÷ Shares held' },
+  { term: 'Market value', detail: 'Current price × Shares held' },
+  { term: 'Unrealised profit or loss', detail: 'Market value − Total invested' },
+  {
+    term: 'Shares to reach a target average',
+    detail: '(Total invested − Target × Shares held) ÷ (Target − Buy price)',
+  },
+];
+
+const READING = [
+  {
+    term: 'Average buy price',
+    detail:
+      'Your break-even price before charges. Every purchase counts in proportion to its size, not its position in the list.',
+  },
+  {
+    term: 'Unrealised profit or loss',
+    detail:
+      'What the holding is worth today against what it cost. Nothing is realised until you sell, and the percentage is measured on the money you put in.',
+  },
+  {
+    term: 'Shares to buy',
+    detail:
+      'How many more shares at your chosen price bring the average to your target, rounded up to a whole share.',
+  },
+  {
+    term: 'New average',
+    detail:
+      'Where the average actually lands once that whole-share rounding is applied — usually a fraction the right side of the target.',
+  },
+];
+---
+
+<BaseLayout {title} {description} path={calculator.href} {jsonLd}>
+  <section class="container-page pt-8 pb-10 sm:pt-10 sm:pb-12">
+    <div class="max-w-prose">
+      <h1 class="text-display-lg">Stock Average Calculator</h1>
+      <p class="mt-3 text-body-lg text-ink-muted">
+        Add every purchase you have made in a stock and get one weighted average price — your real
+        break-even. Then find out what it would take to move that average where you want it.
+      </p>
+    </div>
+
+    <div class="mt-6 sm:mt-8">
+      <StockAverageCalculator />
+    </div>
+  </section>
+
+  <Section
+    id="how-it-works"
+    title="How the average is worked out"
+    lead="A weighted average, then the arithmetic that answers “how many more shares?”"
+  >
+    <div class="grid gap-4 lg:grid-cols-2">
+      <Card title="The formulas" headingLevel={3}>
+        <DefinitionList items={FORMULAS} variant="formula" />
+        <p class="mt-4 text-caption text-ink-subtle">
+          The last line is the first rearranged. Setting the new average equal to your target and
+          solving for the quantity is all the “average down” planner does.
+        </p>
+      </Card>
+
+      <Card title="The example above, step by step" headingLevel={3}>
+        <ol class="space-y-3 text-body-sm text-ink-muted">
+          {steps.map((step, index) => (
+            <li class="flex gap-3">
+              <span class="figures mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-surface-2 text-caption font-semibold text-ink">
+                {index + 1}
+              </span>
+              <span>{step}</span>
+            </li>
+          ))}
+        </ol>
+      </Card>
+    </div>
+  </Section>
+
+  <Section
+    id="averaging-down"
+    title="What averaging down actually does"
+    tone="surface"
+    lead="It moves your break-even price. Whether that helps is a separate question."
+  >
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-8">
+      <div class="max-w-prose space-y-4 text-body text-ink-muted">
+        <p>
+          Buying more of a falling stock lowers the price at which the position gets back to flat.
+          It does not recover the loss, and it does not make the original decision any better — it
+          puts more money behind it. The useful test is whether you would open this position today,
+          at today’s price, knowing nothing about what you already own.
+        </p>
+        <p>
+          Notice how much work the quantity does. Averaging down with a small top-up barely moves
+          the figure, because the average is weighted: to pull it a long way you have to buy an
+          amount comparable to what you already hold. That is the number this calculator makes
+          explicit, and it is often larger than people expect before they run it.
+        </p>
+        <p>
+          There is also a hard limit. You cannot average down to a price below what the market is
+          charging, however many shares you buy — the tool says so rather than returning a figure
+          that cannot be acted on. Deciding your full position size and your exit before the first
+          purchase is what keeps averaging from becoming a way to postpone a loss.
+        </p>
+      </div>
+
+      <Card title="Reading the result" headingLevel={3}>
+        <DefinitionList items={READING} />
+      </Card>
+    </div>
+  </Section>
+
+  <Section
+    id="charges"
+    title="Charges, and what your broker shows"
+    lead="This page averages trade prices. A contract note may not."
+  >
+    <div class="max-w-prose space-y-4 text-body text-ink-muted">
+      <p>
+        The average here is built from the prices you actually paid. Some brokers fold brokerage,
+        securities transaction tax and stamp duty into the cost of acquisition, which nudges the
+        average they display slightly above this one. Neither is wrong — they answer different
+        questions, and it is worth knowing which your broker is showing before you compare.
+      </p>
+      <p>
+        For capital gains the cost of acquisition is the figure that counts, so use your contract
+        note rather than this average when you file. To see what charges do to a single trade end to
+        end, the{' '}
+        <a
+          href="/"
+          class="text-ink underline decoration-hairline-strong underline-offset-2 hover:text-ink-muted"
+        >
+          risk to reward calculator
+        </a>{' '}
+        prices them into the profit and the loss.
+      </p>
+    </div>
+  </Section>
+
+  <Section
+    id="calculators"
+    title="Other calculators"
+    lead="Same approach, different question."
+    tone="surface"
+  >
+    <RelatedCalculators current="stock-average" />
+  </Section>
+
+  <FaqSection faqs={STOCK_AVERAGE_FAQS} title="Stock averaging, answered" />
+</BaseLayout>

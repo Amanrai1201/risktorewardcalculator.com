@@ -1,0 +1,137 @@
+---
+import { STOCK_AVERAGE_DEFAULTS } from '../../lib/calc/defaults';
+import {
+  averageAfterPlan,
+  computeStockAverage,
+  planToReachAverage,
+  summarisePosition,
+} from '../../lib/calc/stock-average';
+import { currencySymbol, formatPrice, formatSignedMoney } from '../../lib/format';
+import Card from '../ui/Card.astro';
+import Field from '../ui/Field.astro';
+import SegmentedControl from '../ui/SegmentedControl.astro';
+import LotRows from './parts/LotRows.astro';
+import StickyStrip from './parts/StickyStrip.astro';
+import StockAverageResults from './parts/StockAverageResults.astro';
+
+/**
+ * The stock average calculator.
+ *
+ * Rendered complete and correct on the server from `STOCK_AVERAGE_DEFAULTS`, so
+ * the page is a working example before any JavaScript loads.
+ * `src/scripts/stock-average.ts` then takes over, adds and removes purchase rows
+ * and rewrites every `data-field` on input.
+ */
+
+const s = STOCK_AVERAGE_DEFAULTS;
+
+const result = computeStockAverage(s.lots);
+const position = summarisePosition(result, s.currentPrice);
+const plan = planToReachAverage(result, s.buyAtPrice, s.targetAverage);
+const after = averageAfterPlan(result, plan, s.buyAtPrice);
+
+const symbol = currencySymbol(s.currency);
+---
+
+<form
+  id="sa-form"
+  novalidate
+  class="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:items-start lg:gap-6"
+>
+  <StickyStrip
+    items={[
+      {
+        label: 'Average',
+        value: formatPrice(result.averagePrice, s.currency),
+        field: 'averagePrice',
+      },
+      {
+        label: 'Unrealised',
+        value: formatSignedMoney(position.unrealised, s.currency),
+        field: 'unrealisedMoney',
+        tone: position.unrealised != null && position.unrealised >= 0 ? 'gain' : 'loss',
+      },
+    ]}
+  />
+
+  <!-- Inputs -->
+  <div class="space-y-4">
+    <Card title="Your purchases" subtitle="One row per buy. Add as many as you need.">
+      <div class="space-y-4">
+        <SegmentedControl
+          name="c"
+          legend="Currency"
+          value={s.currency}
+          options={[
+            { value: 'INR', label: 'Rupees (₹)' },
+            { value: 'USD', label: 'Dollars ($)' },
+          ]}
+        />
+
+        <LotRows lots={s.lots} symbol={symbol} />
+
+        <p class="text-caption text-ink-subtle">
+          Rows with a blank price or quantity are ignored, so a half-typed row never skews the
+          average.
+        </p>
+      </div>
+    </Card>
+
+    <Card title="Where it stands now" subtitle="Optional — for the unrealised gain or loss.">
+      <Field
+        id="sa-current"
+        name="cp"
+        label="Current market price"
+        prefix={symbol}
+        prefixField="currencyPrefix"
+        value={s.currentPrice}
+        placeholder="0.00"
+        hint="What the share trades at today"
+      />
+    </Card>
+
+    <Card
+      title="Average down"
+      subtitle="How many more shares it takes to move your average to a price you choose."
+    >
+      <div class="grid gap-4 sm:grid-cols-2">
+        <Field
+          id="sa-buyat"
+          name="bp"
+          label="Buy more at"
+          prefix={symbol}
+          prefixField="currencyPrefix"
+          value={s.buyAtPrice}
+          placeholder="0.00"
+          hint="The price you would add at"
+        />
+        <Field
+          id="sa-target"
+          name="ta"
+          label="Target average"
+          prefix={symbol}
+          prefixField="currencyPrefix"
+          value={s.targetAverage}
+          placeholder="0.00"
+          hint="Where you want the average to land"
+        />
+      </div>
+    </Card>
+  </div>
+
+  <!-- Results -->
+  <div class="mt-4 space-y-4 lg:mt-0">
+    <StockAverageResults
+      result={result}
+      position={position}
+      plan={plan}
+      after={after}
+      buyAtPrice={s.buyAtPrice}
+      currency={s.currency}
+    />
+  </div>
+</form>
+
+<script>
+  import '../../scripts/stock-average';
+</script>

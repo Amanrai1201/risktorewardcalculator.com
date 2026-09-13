@@ -137,34 +137,42 @@ export function expectancyInMoney(
   return round2(winRate * netReward - (1 - winRate) * netRisk);
 }
 
-/** A plain-language verdict on a ratio, used for the result summary. */
+/**
+ * A plain-language verdict on a ratio, used for the result summary.
+ * `label` is the same judgement in one word, for the verdict badge.
+ */
 export function describeRatio(ratio: number | null): {
   tone: 'good' | 'fair' | 'poor';
+  label: string;
   text: string;
 } {
   if (ratio == null) {
-    return { tone: 'fair', text: 'Enter a stop loss and a target to see your ratio.' };
+    return { tone: 'fair', label: '—', text: 'Enter a stop loss and a target to see your ratio.' };
   }
   if (ratio >= 3) {
     return {
       tone: 'good',
+      label: 'Strong',
       text: 'Strong. You can be wrong most of the time and still come out ahead.',
     };
   }
   if (ratio >= 2) {
     return {
       tone: 'good',
+      label: 'Healthy',
       text: 'Healthy. Winning one trade in three keeps you at break-even.',
     };
   }
   if (ratio >= 1) {
     return {
       tone: 'fair',
+      label: 'Workable',
       text: 'Workable, but you need to win more than half your trades to profit.',
     };
   }
   return {
     tone: 'poor',
+    label: 'Weak',
     text: 'You are risking more than you stand to make, so most of your trades have to win.',
   };
 }

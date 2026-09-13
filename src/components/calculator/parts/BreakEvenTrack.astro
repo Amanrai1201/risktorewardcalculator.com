@@ -1,0 +1,71 @@
+---
+interface Props {
+  /** Win rate this sample needs to break even, as a fraction of 1. */
+  breakEven: number | null;
+  breakEvenLabel: string;
+  /** The sample's own win rate, as a fraction of 1. */
+  winRate: number | null;
+  winRateLabel: string;
+  /** How far above or below break-even the sample sits, and the colour saying which. */
+  marginLabel: string;
+  marginTone: string;
+}
+
+const { breakEven, breakEvenLabel, winRate, winRateLabel, marginLabel, marginTone } = Astro.props;
+
+/**
+ * The break-even win rate drawn as a threshold rather than quoted as a figure.
+ *
+ * A track split into a losing zone and a profitable one, with the sample's own
+ * win rate marked on it, answers the question the calculator exists for at a
+ * glance: am I on the right side of the line? The gap between the marker and the
+ * split is the whole result.
+ *
+ * Unlike `WinRateMeter`, nothing here is an input — both rates are computed — so
+ * it can be reused by any calculator that produces the pair.
+ */
+const clampFraction = (value: number | null) =>
+  value == null ? 0 : Math.min(Math.max(value, 0), 1) * 100;
+
+const breakEvenPct = clampFraction(breakEven);
+const winRatePct = clampFraction(winRate);
+---
+
+<div class="rounded-md border border-hairline bg-surface-1 p-3">
+  <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+    <p class="text-eyebrow uppercase text-ink-subtle">Against the rate you need</p>
+    <p class:list={['text-body-sm font-medium', marginTone]} data-field="marginLabel">
+      {marginLabel}
+    </p>
+  </div>
+
+  <div class="mt-3">
+    <div class="relative h-2.5 overflow-hidden rounded-full bg-gain-bar/25" aria-hidden="true">
+      <span
+        class="block h-full bg-loss-bar/35 transition-[width] duration-150 ease-out"
+        style={`width:${breakEvenPct.toFixed(1)}%`}
+        data-bar="breakeven"
+      ></span>
+      <span
+        class="absolute inset-y-0 w-0.5 -translate-x-1/2 rounded-full bg-ink transition-[left] duration-150 ease-out"
+        style={`left:${winRatePct.toFixed(1)}%`}
+        data-marker="winrate"
+      ></span>
+    </div>
+
+    <div class="mt-1.5 flex items-baseline justify-between gap-3 text-caption text-ink-subtle">
+      <span>
+        Break-even{' '}
+        <span class="figures font-semibold text-ink-muted" data-field="breakEvenWinRate">
+          {breakEvenLabel}
+        </span>
+      </span>
+      <span>
+        Your rate{' '}
+        <span class="figures font-semibold text-ink-muted" data-field="winRate">
+          {winRateLabel}
+        </span>
+      </span>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { computeStockAverage, planToReachAverage, summarisePosition } from '../stock-average';
+import {
+  averageAfterPlan,
+  computeStockAverage,
+  planToReachAverage,
+  summarisePosition,
+} from '../stock-average';
 
 describe('computeStockAverage', () => {
   // 10 shares at ₹100 and 20 at ₹90.
@@ -122,5 +127,34 @@ describe('planToReachAverage', () => {
     const plan = planToReachAverage(computeStockAverage([]), 80, 90);
     expect(plan.quantityNeeded).toBeNull();
     expect(plan.impossibleReason).toBeNull();
+  });
+});
+
+describe('averageAfterPlan', () => {
+  const result = computeStockAverage([
+    { price: 100, quantity: 10 },
+    { price: 90, quantity: 20 },
+  ]);
+
+  it('lands exactly on the target when the quantity divides evenly', () => {
+    const plan = planToReachAverage(result, 80, 90);
+    expect(averageAfterPlan(result, plan, 80)).toMatchObject({
+      totalQuantity: 40,
+      totalInvested: 3_600,
+      averagePrice: 90,
+    });
+  });
+
+  it('lands just under the target when the quantity was rounded up', () => {
+    // 11.67 shares rounded to 12 buys slightly more than the target needs.
+    const plan = planToReachAverage(result, 85, 91);
+    const after = averageAfterPlan(result, plan, 85)!;
+    expect(after.averagePrice).toBeLessThan(91);
+    expect(after.averagePrice).toBeCloseTo(90.95, 2);
+  });
+
+  it('has nothing to report without a plan to follow', () => {
+    const impossible = planToReachAverage(result, 92, 90);
+    expect(averageAfterPlan(result, impossible, 92)).toBeNull();
   });
 });

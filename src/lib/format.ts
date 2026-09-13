@@ -130,6 +130,18 @@ export function formatRatioShort(ratio: number | null | undefined): string {
   return `${formatNumber(ratio, 'INR', { decimals: 2, maxDecimals: 2 })}R`;
 }
 
+/**
+ * An R multiple with an explicit sign, e.g. `+0.60R`.
+ * Expectancy is routinely negative, which `formatRatioShort` refuses on its own.
+ */
+export function formatSignedR(value: number | null | undefined): string {
+  if (value == null || !Number.isFinite(value)) return '—';
+  const magnitude = formatRatioShort(Math.abs(value));
+  if (value > 0) return `+${magnitude}`;
+  if (value < 0) return `−${magnitude}`;
+  return magnitude;
+}
+
 /** Pips, to one decimal place. */
 export function formatPips(value: number | null | undefined): string {
   if (value == null || !Number.isFinite(value)) return '—';

@@ -1,0 +1,180 @@
+---
+import type { CurrencyCode } from '../../../lib/calc/types';
+import type {
+  AverageDownPlan,
+  CurrentPositionSummary,
+  StockAverageResult,
+} from '../../../lib/calc/stock-average';
+import {
+  formatMoney,
+  formatNumber,
+  formatPercent,
+  formatPrice,
+  formatSignedMoney,
+} from '../../../lib/format';
+import { positionVerdict, stockAverageSummary } from '../../../lib/notes';
+import Button from '../../ui/Button.astro';
+import Callout from '../../ui/Callout.astro';
+import Card from '../../ui/Card.astro';
+import StatTile from '../../ui/StatTile.astro';
+import VerdictChip from '../../ui/VerdictChip.astro';
+
+interface Props {
+  result: StockAverageResult;
+  position: CurrentPositionSummary;
+  plan: AverageDownPlan;
+  /** The position the plan leaves you holding, or null when there is no plan. */
+  after: StockAverageResult | null;
+  /** Echoed back in the plan sentence, so the numbers are traceable. */
+  buyAtPrice: number;
+  currency: CurrencyCode;
+}
+
+const { result, position, plan, after, buyAtPrice, currency } = Astro.props;
+
+const verdict = positionVerdict(position.unrealised);
+
+/**
+ * The unrealised figures flip colour with their sign, so they are plain spans
+ * rather than `StatTile`s — a tile's wash is decided at render time and the
+ * controller has no way to repaint it.
+ */
+const unrealisedTone =
+  position.unrealised == null || position.unrealised === 0
+    ? 'text-ink-muted'
+    : position.unrealised > 0
+      ? 'text-gain'
+      : 'text-loss';
+---
+
+<Card title="Your position" subtitle="Recalculates as you type.">
+  <VerdictChip slot="header" tone={verdict.tone} label={verdict.label} />
+
+  <div class="space-y-5">
+    <div class="grid grid-cols-2 gap-3">
+      <StatTile
+        label="Average buy price"
+        value={formatPrice(result.averagePrice, currency)}
+        hint="weighted by quantity"
+        field="averagePrice"
+        size="lg"
+        tone="accent"
+        emphasis
+      />
+      <StatTile
+        label="Total invested"
+        value={formatMoney(result.totalInvested, currency)}
+        hint={`${formatNumber(result.totalQuantity)} shares held`}
+        hintField="sharesHint"
+        field="totalInvested"
+        size="lg"
+        emphasis
+      />
+    </div>
+
+    {/*
+      The figures above carry the answer visually. This is the same answer as one
+      sentence for screen readers — the single live region, so nothing is
+      announced twice.
+    */}
+    <p
+      role="status"
+      aria-live="polite"
+      class="sr-only"
+      data-field="summary"
+      data-verdict={verdict.tone}
+    >
+      {stockAverageSummary(result, position, plan, currency)}
+    </p>
+
+    <div class="rounded-md border border-hairline bg-surface-1 p-3">
+      <p class="text-eyebrow uppercase text-ink-subtle">At the current price</p>
+      <p class="mt-1 flex flex-wrap items-baseline gap-x-2">
+        <span class="figures text-figure-lg text-ink" data-field="marketValue">
+          {formatMoney(position.marketValue, currency)}
+        </span>
+        <span
+          class:list={['figures text-body font-semibold', unrealisedTone]}
+          data-field="unrealisedMoney"
+        >
+          {formatSignedMoney(position.unrealised, currency)}
+        </span>
+        <span class:list={['figures text-body-sm', unrealisedTone]} data-field="unrealisedPercent">
+          ({formatPercent(position.unrealisedFraction)})
+        </span>
+      </p>
+      <p class="mt-3 border-t border-hairline pt-3 text-body-sm text-ink-muted">
+        Against{' '}
+        <span class="figures text-ink" data-field="totalInvested">
+          {formatMoney(result.totalInvested, currency)}
+        </span>{' '}
+        invested. The holding breaks even at your average price, whatever you paid on any one day.
+      </p>
+    </div>
+
+    <div>
+      <p class="text-eyebrow uppercase text-ink-subtle">To reach your target average</p>
+      <div class="mt-2 grid grid-cols-3 gap-3">
+        <StatTile
+          label="Shares to buy"
+          value={formatNumber(plan.quantityNeeded)}
+          hint="rounded up to a whole share"
+          field="quantityNeeded"
+          size="sm"
+          emphasis
+        />
+        <StatTile
+          label="Cash needed"
+          value={formatMoney(plan.investmentNeeded, currency)}
+          hint={`at ${formatPrice(buyAtPrice, currency)}`}
+          hintField="buyAtHint"
+          field="investmentNeeded"
+          size="sm"
+          emphasis
+        />
+        <StatTile
+          label="New average"
+          value={formatPrice(after?.averagePrice ?? null, currency)}
+          hint={`across ${formatNumber(after?.totalQuantity ?? null)} shares`}
+          hintField="newQuantityHint"
+          field="newAveragePrice"
+          size="sm"
+          emphasis
+        />
+      </div>
+    </div>
+
+    <Callout
+      tone="warn"
+      title="That target cannot be reached"
+      field="planIssue"
+      hidden={!plan.impossibleReason}
+    >
+      <span data-field="planIssueText">{plan.impossibleReason}</span>
+    </Callout>
+
+    <Callout tone="note" title="Averaging down is not a fix on its own" field="averagingNote">
+      Buying more lowers the average, but it also puts more money behind a position that has gone
+      against you. The lower average is only worth having if you would open the trade again today at
+      this price.
+    </Callout>
+  </div>
+
+  <div class="mt-5 flex flex-wrap items-center gap-2 border-t border-hairline pt-4">
+    <Button variant="secondary" size="sm" data-action="copy-result">
+      Copy result
+    </Button>
+    <Button variant="secondary" size="sm" data-action="copy-link">
+      Copy link
+    </Button>
+    <Button variant="ghost" size="sm" data-action="reset">
+      Reset
+    </Button>
+    <p
+      class="text-caption text-ink-subtle"
+      role="status"
+      aria-live="polite"
+      data-field="actionStatus"
+    ></p>
+  </div>
+</Card>

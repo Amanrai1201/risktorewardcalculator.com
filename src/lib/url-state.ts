@@ -8,6 +8,8 @@
  * `location` and `history`.
  */
 
+import { parseNumeric } from './calc/num';
+
 export type StateValue = string | number | null | undefined;
 
 /** Serialise state to a query string, dropping anything empty. */
@@ -45,6 +47,47 @@ export function pickOption<T extends string>(
   fallback: T,
 ): T {
   return raw != null && (allowed as readonly string[]).includes(raw) ? (raw as T) : fallback;
+}
+
+/** One purchase row of the stock average calculator. */
+export interface LotPair {
+  price: number | null;
+  quantity: number | null;
+}
+
+/**
+ * The purchase rows as a single parameter, `price x quantity` per row:
+ * `150x200,120x300`.
+ *
+ * One key rather than `p1`/`q1`/`p2`/`q2` keeps a shared link short and stable
+ * however many rows are added or removed. Parsed numbers are encoded rather
+ * than the raw field text, because a quantity typed as `1,20,000` would
+ * otherwise collide with the row separator.
+ */
+export function encodeLots(lots: LotPair[]): string {
+  const rows: string[] = [];
+
+  for (const lot of lots) {
+    if (lot.price == null && lot.quantity == null) continue;
+    rows.push(`${lot.price ?? ''}x${lot.quantity ?? ''}`);
+  }
+
+  return rows.join(',');
+}
+
+/** Read the rows back, skipping anything that is not a pair of numbers. */
+export function decodeLots(raw: string | undefined): { price: number; quantity: number }[] {
+  if (!raw) return [];
+
+  const lots: { price: number; quantity: number }[] = [];
+
+  for (const row of raw.split(',')) {
+    const [price, quantity] = row.split('x').map((part) => parseNumeric(part));
+    if (price == null || quantity == null) continue;
+    lots.push({ price, quantity });
+  }
+
+  return lots;
 }
 
 /** Current query state, or an empty record outside the browser. */
