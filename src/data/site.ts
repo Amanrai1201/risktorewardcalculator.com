@@ -6,18 +6,18 @@ export const SITE = {
   domain: 'risktorewardcalculator.com',
   url: 'https://risktorewardcalculator.com',
   description:
-    'Free risk to reward calculator for stocks and forex. Work out your risk-reward ratio, break-even win rate, and net profit after Indian brokerage, STT, GST and stamp duty.',
+    'Free online Risk Reward Calculator, Win Rate Calculator & Stock Average Calculator for trading stocks, forex, and crypto. Calculate risk reward ratio, win rate formula, brokerage, and average down cost.',
 } as const;
 
 export const NAV_LINKS = [
   { href: '/', label: 'Risk : Reward' },
   { href: '/win-rate-calculator/', label: 'Win rate' },
   { href: '/stock-average-calculator/', label: 'Stock average' },
-  { href: '/risk-reward-calculator/', label: 'Guide' },
+  { href: '/#guide', label: 'Guide' },
 ] as const;
 
 export const FOOTER_LINKS = [
-  { href: '/risk-reward-calculator/', label: 'Risk reward ratio guide' },
-  { href: '/disclaimer/', label: 'Disclaimer' },
-  { href: '/privacy-policy/', label: 'Privacy policy' },
+  { href: '/#guide', label: 'Risk reward ratio guide' },
+  { href: '/win-rate-calculator/', label: 'Win rate calculator' },
+  { href: '/stock-average-calculator/', label: 'Stock average calculator' },
 ] as const;
