@@ -131,6 +131,46 @@
     scroll-padding-top: 1.5rem;
   }
 
+  html.dark,
+  html[data-theme="dark"] {
+    color-scheme: dark;
+
+    /* Surfaces */
+    --color-canvas: #0b0e17;
+    --color-surface-1: #131724;
+    --color-surface-2: #1b2033;
+    --color-surface-3: #242b45;
+    --color-hairline: #24293d;
+    --color-hairline-strong: #333a57;
+
+    /* Text ladder */
+    --color-ink: #f0f3ff;
+    --color-ink-muted: #c3c8e0;
+    --color-ink-subtle: #8990b0;
+    --color-ink-tertiary: #5d6380;
+
+    /* Brand */
+    --color-primary: #00d09c;
+    --color-primary-hover: #00e6ac;
+    --color-primary-press: #00b386;
+    --color-on-primary: #031410;
+    --color-accent: #697aff;
+    --color-accent-hover: #8392ff;
+
+    /* Semantics */
+    --color-gain: #00c090;
+    --color-gain-bar: #00d09c;
+    --color-gain-wash: rgba(0, 208, 156, 0.14);
+    --color-loss: #ff6b6b;
+    --color-loss-bar: #eb5b3c;
+    --color-loss-wash: rgba(235, 91, 60, 0.14);
+  }
+
+  html.dark select,
+  html[data-theme="dark"] select {
+    color-scheme: dark;
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
   }

@@ -34,6 +34,21 @@ const ogImage = new URL('/og.svg', Astro.site ?? SITE.url).href;
     <link rel="canonical" href={canonical} />
     {noindex ? <meta name="robots" content="noindex, follow" /> : <meta name="robots" content="index, follow" />}
 
+    <!-- Theme initialization script (prevents theme flash on load) -->
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem('theme');
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (stored === 'dark' || (!stored && systemDark)) {
+          document.documentElement.classList.add('dark');
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+
     <!-- Preload only the Latin subset actually used above the fold. -->
     <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
 

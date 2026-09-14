@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/site/Section.astro';
+import Card from '../../components/ui/Card.astro';
+import RelatedCalculators from '../../components/site/RelatedCalculators.astro';
+import { breadcrumbs } from '../../lib/schema';
+
+const title = 'About Us | Free Client-Side Trading Calculators';
+const description =
+  'Learn about Risk Reward Calculator. We build free, instant, client-side trading tools to empower stock, forex, and crypto traders with accurate risk management.';
+
+const jsonLd = [
+  breadcrumbs([
+    { name: 'Home', path: '/' },
+    { name: 'About Us', path: '/about-us/' },
+  ]),
+];
+
+const FEATURES = [
+  {
+    title: '100% Client-Side Computation',
+    description:
+      'All calculations run locally inside your browser using raw JavaScript. Your trade values, entry prices, capital, and position sizes never leave your device.',
+  },
+  {
+    title: 'Net Profit & Brokerage Realism',
+    description:
+      'Unlike basic calculators that quote theoretical ratios, our tool prices Indian statutory taxes (STT, GST, stamp duty) and broker rate cards directly into net risk-to-reward metrics.',
+  },
+  {
+    title: 'Integrated Calculator Suite',
+    description:
+      'A complete suite featuring Risk Reward Analysis, Win Rate Expectancy Formula, and Stock Cost Average Down planners.',
+  },
+  {
+    title: 'Zero Latency & Responsive UI',
+    description:
+      'Built with modern lightweight web technologies to recalculate results instantly on every keypress without layout shift or server delays.',
+  },
+];
+---
+
+<BaseLayout {title} {description} path="/about-us/" {jsonLd}>
+  <section class="container-page pt-8 pb-10 sm:pt-10 sm:pb-12">
+    <div class="max-w-prose">
+      <h1 class="text-display-lg">About Risk Reward Calculator</h1>
+      <p class="mt-3 text-body-lg text-ink-muted">
+        We build precise, free, and completely private trading tools designed to help traders eliminate guesswork and manage capital risk.
+      </p>
+    </div>
+  </section>
+
+  <Section id="mission" title="Our Mission" tone="surface">
+    <div class="max-w-prose space-y-4 text-body text-ink-muted">
+      <p>
+        In financial markets, success is rarely about predicting the future with 100% certainty. Instead, long-term profitability rests on statistical edge, mathematical expectancy, and disciplined risk management.
+      </p>
+      <p>
+        We created <strong>risktorewardcalculator.com</strong> because standard calculators ignore execution costs—brokerage fees, Securities Transaction Tax (STT), exchange charges, GST, and stamp duty—making trade setups look far better on paper than they perform in reality.
+      </p>
+      <p>
+        Our tools bridge this gap by computing true net profit, net loss, net risk-to-reward ratio, and exact break-even win rate before you click place order.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="why-choose-us" title="Why Traders Trust Our Platform">
+    <div class="grid gap-6 sm:grid-cols-2">
+      {FEATURES.map((feature) => (
+        <Card title={feature.title} headingLevel={3}>
+          <p class="mt-2 text-body-sm text-ink-muted">{feature.description}</p>
+        </Card>
+      ))}
+    </div>
+  </Section>
+
+  <Section id="tools" title="Explore Our Calculator Suite" tone="surface">
+    <RelatedCalculators current="" />
+  </Section>
+</BaseLayout>

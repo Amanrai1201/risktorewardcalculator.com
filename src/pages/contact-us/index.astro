@@ -1,0 +1,196 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/site/Section.astro';
+import Card from '../../components/ui/Card.astro';
+import { breadcrumbs } from '../../lib/schema';
+
+const title = 'Contact Us | Risk Reward Calculator';
+const description =
+  'Get in touch with the Risk Reward Calculator team. Send us your feedback, bug reports, feature requests, or business inquiries.';
+
+const jsonLd = [
+  breadcrumbs([
+    { name: 'Home', path: '/' },
+    { name: 'Contact Us', path: '/contact-us/' },
+  ]),
+];
+---
+
+<BaseLayout {title} {description} path="/contact-us/" {jsonLd}>
+  <section class="container-page pt-8 pb-10 sm:pt-10 sm:pb-12">
+    <div class="max-w-prose">
+      <h1 class="text-display-lg">Contact Us</h1>
+      <p class="mt-3 text-body-lg text-ink-muted">
+        Have feedback, bug reports, feature suggestions, or rate card updates? We would love to hear from you.
+      </p>
+    </div>
+  </section>
+
+  <Section id="contact-form-section" title="Send Us a Message" tone="surface">
+    <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:items-start">
+      <!-- Form Container -->
+      <div class="panel p-5 sm:p-6">
+        <form id="contact-form-alias" class="space-y-4" novalidate>
+          <div>
+            <label for="contact-alias-name" class="block text-body-sm font-medium text-ink">
+              Your Name <span class="text-loss">*</span>
+            </label>
+            <div class="relative mt-1.5">
+              <input
+                id="contact-alias-name"
+                name="name"
+                type="text"
+                required
+                placeholder="e.g. Rahul Sharma"
+                class="figures h-11 w-full rounded-md border border-hairline-strong bg-canvas px-3 text-body text-ink transition-colors duration-150 outline-none hover:border-ink-tertiary focus-visible:border-accent"
+              />
+            </div>
+            <p id="contact-alias-name-error" class="mt-1 text-caption text-loss" hidden>Please enter your name.</p>
+          </div>
+
+          <div>
+            <label for="contact-alias-email" class="block text-body-sm font-medium text-ink">
+              Email Address <span class="text-loss">*</span>
+            </label>
+            <div class="relative mt-1.5">
+              <input
+                id="contact-alias-email"
+                name="email"
+                type="email"
+                required
+                placeholder="name@example.com"
+                class="figures h-11 w-full rounded-md border border-hairline-strong bg-canvas px-3 text-body text-ink transition-colors duration-150 outline-none hover:border-ink-tertiary focus-visible:border-accent"
+              />
+            </div>
+            <p id="contact-alias-email-error" class="mt-1 text-caption text-loss" hidden>Please enter a valid email address.</p>
+          </div>
+
+          <div>
+            <label for="contact-alias-subject" class="block text-body-sm font-medium text-ink">
+              Subject / Topic <span class="text-loss">*</span>
+            </label>
+            <div class="relative mt-1.5">
+              <select
+                id="contact-alias-subject"
+                name="subject"
+                class="h-11 w-full appearance-none rounded-md border border-hairline-strong bg-canvas pr-10 pl-3 text-body text-ink transition-colors duration-150 outline-none hover:border-ink-tertiary focus-visible:border-accent"
+              >
+                <option value="general">General Inquiry</option>
+                <option value="feedback">Feedback / Suggestion</option>
+                <option value="bug">Report a Calculation Bug</option>
+                <option value="rate-card">Broker Rate Card Update</option>
+                <option value="partnership">Business &amp; Advertising Inquiry</option>
+              </select>
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 20 20"
+                fill="none"
+                class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-ink-subtle"
+              >
+                <path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div>
+            <label for="contact-alias-message" class="block text-body-sm font-medium text-ink">
+              Message <span class="text-loss">*</span>
+            </label>
+            <div class="relative mt-1.5">
+              <textarea
+                id="contact-alias-message"
+                name="message"
+                rows="5"
+                required
+                placeholder="Write your message or inquiry here..."
+                class="w-full rounded-md border border-hairline-strong bg-canvas p-3 text-body text-ink transition-colors duration-150 outline-none hover:border-ink-tertiary focus-visible:border-accent"
+              ></textarea>
+            </div>
+            <p id="contact-alias-message-error" class="mt-1 text-caption text-loss" hidden>Please enter a message (at least 10 characters).</p>
+          </div>
+
+          <div class="pt-2">
+            <button
+              type="submit"
+              class="inline-flex min-h-11 w-full items-center justify-center rounded-md font-medium text-on-primary bg-primary hover:bg-primary-hover active:bg-primary-press transition-colors duration-150 px-4 text-body"
+            >
+              Send Message
+            </button>
+          </div>
+
+          <div id="contact-alias-status" class="rounded-md border p-4 border-gain/30 bg-gain-wash text-body-sm text-gain font-medium" hidden>
+            Thank you! Your message has been sent successfully. We will get back to you within 24-48 hours.
+          </div>
+        </form>
+      </div>
+
+      <!-- Information Cards -->
+      <div class="space-y-4">
+        <Card title="Quick Support & Response Time" headingLevel={3}>
+          <p class="mt-2 text-body-sm text-ink-muted">
+            We aim to review and reply to all user inquiries within <strong>24 to 48 business hours</strong>.
+          </p>
+        </Card>
+
+        <Card title="Broker Rate Card Suggestions" headingLevel={3}>
+          <p class="mt-2 text-body-sm text-ink-muted">
+            Spotted an updated brokerage rate card or exchange fee change for Zerodha, Upstox, Angel One, or BSE/NSE? Let us know so we can update our tax engine!
+          </p>
+        </Card>
+
+        <Card title="Privacy Guarantee" headingLevel={3}>
+          <p class="mt-2 text-body-sm text-ink-muted">
+            Your contact details are used solely to reply to your message. We never send spam, share, or sell your email address.
+          </p>
+        </Card>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<script>
+  const form = document.getElementById('contact-form-alias') as HTMLFormElement | null;
+  const nameInput = document.getElementById('contact-alias-name') as HTMLInputElement | null;
+  const emailInput = document.getElementById('contact-alias-email') as HTMLInputElement | null;
+  const messageInput = document.getElementById('contact-alias-message') as HTMLTextAreaElement | null;
+  const statusDiv = document.getElementById('contact-alias-status');
+
+  const nameError = document.getElementById('contact-alias-name-error');
+  const emailError = document.getElementById('contact-alias-email-error');
+  const messageError = document.getElementById('contact-alias-message-error');
+
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let valid = true;
+
+      if (nameError) nameError.hidden = true;
+      if (emailError) emailError.hidden = true;
+      if (messageError) messageError.hidden = true;
+
+      if (!nameInput?.value.trim()) {
+        if (nameError) nameError.hidden = false;
+        valid = false;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailInput?.value.trim() || !emailRegex.test(emailInput.value.trim())) {
+        if (emailError) emailError.hidden = false;
+        valid = false;
+      }
+
+      if (!messageInput?.value.trim() || messageInput.value.trim().length < 10) {
+        if (messageError) messageError.hidden = false;
+        valid = false;
+      }
+
+      if (valid && statusDiv) {
+        statusDiv.hidden = false;
+        form.reset();
+        setTimeout(() => {
+          if (statusDiv) statusDiv.hidden = true;
+        }, 8000);
+      }
+    });
+  }
+</script>

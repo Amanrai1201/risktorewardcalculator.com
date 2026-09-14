@@ -13,142 +13,120 @@ export interface Faq {
 
 export const HOME_FAQS: Faq[] = [
   {
-    question: 'How do I calculate a risk to reward ratio?',
+    question: 'What is risk reward ratio in trading?',
     answer:
-      'Measure the distance from your entry to your stop loss — that is your risk per share. Then measure the distance from your entry to your target — that is your reward per share. Divide the reward by the risk and write it as 1 : n. Buying at ₹100 with a stop at ₹95 and a target at ₹115 risks ₹5 to make ₹15, which is 1 : 3.',
+      'The risk reward ratio in trading compares your potential loss to your expected gain on a trade. It measures how much capital you are risking to achieve a specific profit target. For example, a 1 : 2 ratio means you stand to make $2 for every $1 risked, allowing a trader to remain profitable over time even with a win rate below 50%.',
   },
   {
-    question: 'What is a good risk to reward ratio?',
+    question: 'How to calculate risk to reward ratio?',
     answer:
-      'Most swing and positional traders look for at least 1 : 2, and 1 : 3 gives comfortable room for error. The number only matters next to your win rate: at 1 : 2 you break even winning one trade in three, while at 1 : 1 you need to win more than half. A high ratio on a setup that almost never reaches its target is worse than a modest ratio you actually hit.',
+      'To calculate risk to reward ratio, measure the distance from your entry price to your stop loss (Risk per share) and the distance from your entry price to your profit target (Reward per share). Divide the reward per share by the risk per share and write it as 1 : n. For instance, buying at ₹100 with a stop loss at ₹95 (₹5 risk) and a target at ₹115 (₹15 reward) gives a risk to reward ratio of 1 : 3.',
+  },
+  {
+    question: 'How to calculate risk reward ratio in trading?',
+    answer:
+      'In trading, calculate the risk reward ratio using the formula: Risk = |Entry Price − Stop Loss| and Reward = |Target Price − Entry Price|. The ratio is expressed as 1 : (Reward ÷ Risk). For long positions, Risk = Entry − Stop Loss and Reward = Target − Entry. For short positions, Risk = Stop Loss − Entry and Reward = Entry − Target. Factoring in brokerage, taxes, and slippage gives your true net risk reward ratio.',
+  },
+  {
+    question: 'How to calculate risk reward ratio in forex?',
+    answer:
+      'To calculate risk reward ratio in forex, measure your stop loss and take profit distances in pips or US dollars. Divide the target profit in pips by your stop loss in pips. For instance, risking 20 pips to gain 60 pips on EUR/USD yields a 20 : 60 ratio, simplified to 1 : 3. In lot sizes (standard, mini, micro), multiply pip values by lot count and include spread and commission costs for an accurate net ratio.',
+  },
+  {
+    question: 'What is a good risk to reward ratio in trading?',
+    answer:
+      'A good risk to reward ratio in trading is typically 1 : 2 or 1 : 3 for swing and position trading. However, a good ratio depends on your win rate: at 1 : 2, you break even with a 33.3% win rate, whereas at 1 : 1, you need over 50%. A higher ratio provides a larger safety margin, but only if the profit target is realistic and regularly achieved.',
+  },
+  {
+    question: 'What is the relationship between risk and reward in investing?',
+    answer:
+      'In investing, the relationship between risk and reward is directly proportional: higher potential returns generally require taking on higher risk, while lower-risk assets offer more modest returns. Investors balance this tradeoff by constructing diversified portfolios that match their financial goals and risk capacity.',
+  },
+  {
+    question: 'What is the relationship between risk and reward?',
+    answer:
+      'The relationship between risk and reward states that potential payout increases in tandem with the level of risk accepted. In trading, maintaining a favorable risk to reward ratio ensures that your average winning trade is significantly larger than your average losing trade, enabling long-term account growth even during losing streaks.',
   },
   {
     question: 'Does this calculator include brokerage and taxes?',
     answer:
-      'Yes, and they change the result rather than sitting in a separate table. Pick your broker, exchange and product, and the calculator prices brokerage, STT, exchange transaction charges, the SEBI turnover fee, stamp duty, GST and DP charges into a net profit, a net loss and a net risk to reward ratio. All charge figures are estimates based on published rate cards.',
+      'Yes. Pick your broker, exchange, and product, and the calculator prices brokerage, STT, exchange transaction charges, SEBI turnover fees, stamp duty, GST, and DP charges into a net profit, net loss, net risk to reward ratio, and net break-even win rate.',
   },
   {
     question: 'What does the break-even win rate tell me?',
     answer:
-      'It is the share of trades you must win for this setup to end up flat over many repetitions. A 1 : 3 setup breaks even at a 25 per cent win rate, so anything above that is profit. It is the fastest way to sanity-check a trade: if the break-even win rate is higher than you have ever managed, the setup is not worth taking.',
+      'The break-even win rate is the percentage of trades you must win for a setup to end up flat over time. A 1 : 3 setup breaks even at a 25% win rate, so any win rate above 25% produces profit. It is the fastest way to sanity-check a trade setup before taking it.',
   },
   {
     question: 'Can I use it for short trades?',
     answer:
-      'Yes. Choose Short and put the stop above your entry and the target below it. The arithmetic is the same, but the charges are not — on an intraday short the entry is the sell leg, which moves where securities transaction tax and stamp duty land. The calculator accounts for that.',
-  },
-  {
-    question: 'Does it work for forex?',
-    answer:
-      'Switch the market to Forex and you can size a position in standard, mini or micro lots, or in raw units. Risk and reward are shown in pips and in US dollars, and your spread and per-lot commission are treated as the cost of the trade in place of Indian statutory charges.',
-  },
-];
-
-export const GUIDE_FAQS: Faq[] = [
-  {
-    question: 'Is 1 : 2 or 1 : 3 the better target?',
-    answer:
-      'Neither is better on its own, because a wider target is also a target you reach less often. Moving from 1 : 2 to 1 : 3 drops your break-even win rate from 33 to 25 per cent, but it only pays if your win rate falls by less than that. Work out both ratios for the same idea, compare each against the win rate you actually record, and take the one with the higher expectancy.',
-  },
-  {
-    question: 'Where should the stop loss go?',
-    answer:
-      'Place it where the trade idea is proven wrong — beyond a swing low, a breakout level or a moving average — and then let the ratio tell you whether the trade is worth taking. Choosing a stop to manufacture a flattering ratio inverts the process: you end up with a tight stop that gets hit by ordinary noise, and a ratio that never materialises.',
-  },
-  {
-    question: 'How much do charges really change the ratio?',
-    answer:
-      'It depends almost entirely on how wide your stop and target are relative to your position value. A 1 : 3 intraday setup risking ₹5 a share on a ₹100 stock loses very little to charges, while the same charges on a ₹1 stop can turn 1 : 3 into something closer to 1 : 2. Small targets and large positions are where costs do the most damage.',
-  },
-  {
-    question: 'Why is my net ratio worse than my gross ratio?',
-    answer:
-      'Because charges push in both directions. On a winning trade they come out of your profit; on a losing trade they are added to your loss. Net reward is gross reward minus the charges at your target, and net risk is gross risk plus the charges at your stop, so the net ratio is always below the gross one.',
-  },
-  {
-    question: 'Why are charges calculated twice for one trade?',
-    answer:
-      'Most charges are a percentage of turnover, and turnover depends on the price you exit at. Selling at your target produces a different turnover from selling at your stop, so the two exits genuinely cost different amounts. Pricing the trade once and reusing the number for both outcomes is a common shortcut that makes the loss look smaller than it is.',
-  },
-  {
-    question: 'Which charges apply to intraday but not delivery?',
-    answer:
-      'Securities transaction tax is the main difference: intraday equity is taxed at 0.025 per cent on the sell leg only, while delivery is taxed at 0.1 per cent on both legs. Stamp duty is 0.003 per cent on the buy leg for intraday against 0.015 per cent for delivery, and depository charges apply only when you sell shares held in your demat account.',
-  },
-  {
-    question: 'What is GST charged on?',
-    answer:
-      'GST at 18 per cent applies to the services in the trade — brokerage, exchange transaction charges, the SEBI turnover fee and depository charges — not to the taxes. Securities transaction tax and stamp duty are outside the GST base. Getting this wrong is what makes hand-built spreadsheets overstate the cost of a trade.',
-  },
-  {
-    question: 'How do I turn a rupee risk limit into a quantity?',
-    answer:
-      'Divide the money you are willing to lose by your risk per share. Risking 1 per cent of a ₹5,00,000 account is ₹5,000, and with a ₹5 stop distance that is 1,000 shares. The position size helper in the calculator does this from your capital and risk percentage, and you can apply the result to the quantity field in one click.',
-  },
-  {
-    question: 'What does expectancy add that the ratio does not?',
-    answer:
-      'The ratio describes one trade; expectancy describes a run of them. Multiply your win rate by the net profit, subtract the losing share multiplied by the net loss, and you get the average rupees a trade of this type is worth. It is the figure that settles arguments between a high win rate with small targets and a low win rate with large ones.',
-  },
-  {
-    question: 'How does a pip translate into money?',
-    answer:
-      'For a pair quoted in US dollars, one pip on a standard lot of 100,000 units is worth about $10, and a mini lot is worth about $1. When the dollar is the base currency, as in USD/JPY, the pip value depends on the exchange rate, so the calculator works it out from the price you enter rather than assuming a fixed figure.',
+      'Yes. Choose Short and set the stop loss above your entry price and target below it. The calculator computes risk and reward distances accordingly and accounts for short intraday sell leg taxes and charges.',
   },
 ];
 
 export const WIN_RATE_FAQS: Faq[] = [
   {
-    question: 'How is win rate calculated?',
+    question: 'How to calculate win rate?',
     answer:
-      'Divide your winning trades by your total closed trades and express it as a percentage. Thirty-two wins out of eighty trades is a 40 per cent win rate. Trades that closed at break-even are usually left out of both counts, since they neither confirm nor contradict the edge.',
+      'Win rate is calculated by dividing your number of winning trades by total closed trades and multiplying by 100. Formula: Win Rate (%) = (Winning Trades ÷ Total Closed Trades) × 100. For example, 45 wins out of 60 total decided trades is a 75% win rate. Break-even trades are typically excluded from the calculation.',
   },
   {
-    question: 'What win rate do I need to be profitable?',
+    question: 'What is a good win rate in trading?',
     answer:
-      'It depends entirely on your average reward-to-risk. At 1 : 1 you need better than 50 per cent, at 1 : 2 you need better than 33 per cent, and at 1 : 3 you need better than 25 per cent. A 70 per cent win rate still loses money if your losers are three times the size of your winners.',
+      'A good win rate in trading typically falls between 40% and 60% for most successful trading systems. A 40% win rate can be highly profitable if your risk to reward ratio is 1 : 2 or higher. Conversely, even an 80% win rate can lose money if average losses far exceed average gains.',
   },
   {
-    question: 'Is a high win rate a good thing?',
+    question: 'How to achieve 90% win rate in trading?',
     answer:
-      'Only alongside the size of your average win and loss. Strategies that take small, frequent profits produce comfortable win rates and can still be wiped out by a handful of large losses. Expectancy — average profit per trade across wins and losses — is the measure that tells you whether the approach makes money.',
+      'To achieve a 90% win rate in trading, traders focus on strong trend alignment, high-confluence support/resistance setups, tight profit targets (scalping), and strict exit discipline. However, 90% win rate strategies often risk larger stop losses relative to targets. High win rates must be balanced with strict risk management to prevent a single large loss from wiping out cumulative gains.',
   },
   {
-    question: 'How many trades before my win rate means anything?',
+    question: 'How do I improve my win rate in day trading?',
     answer:
-      'A few dozen trades give you a rough sense; a hundred or more before you draw firm conclusions. Small samples are dominated by luck, and the first ten trades of a losing strategy can easily look like the first ten of a winning one.',
+      'To improve your win rate in day trading, trade only in the direction of the dominant higher time frame trend, wait for key level confirmations, avoid over-trading during low volatility market sessions, use fixed risk management per trade (1-2% of account capital), and keep a detailed trade log to identify and refine your highest-probability setups.',
   },
   {
     question: 'What is expectancy in trading?',
     answer:
-      'Expectancy is the average result of one trade over a long run: win rate multiplied by average win, minus loss rate multiplied by average loss. A positive number means the strategy makes money if you keep repeating it at the same size. It also tells you how many trades you need before the edge shows through the noise.',
+      'Expectancy is the average result of one trade over a long run: (Win Rate × Average Win) − (Loss Rate × Average Loss). A positive expectancy proves your trading strategy has a statistical edge and generates profit over time.',
+  },
+  {
+    question: 'How many trades before my win rate means anything?',
+    answer:
+      'A sample size of at least 50 to 100 trades is needed to calculate a statistically meaningful win rate. Small samples dominated by 10-20 trades are heavily influenced by market luck and noise.',
   },
 ];
 
 export const STOCK_AVERAGE_FAQS: Faq[] = [
   {
-    question: 'How do I calculate the average price of a stock?',
+    question: 'How to average stock price using a calculator?',
     answer:
-      'Add up what you paid across every purchase, then divide by the total number of shares. Two hundred shares at ₹150 and three hundred at ₹120 is ₹30,000 plus ₹36,000 for five hundred shares, an average of ₹132. It is a weighted average, so the larger purchase pulls the figure towards its own price.',
+      'To average stock price using a calculator, enter the purchase price and share quantity for each buy order. The calculator computes the weighted average price by dividing total money spent by total shares owned. For example, buying 100 shares at ₹150 and 200 shares at ₹120 totals ₹39,000 for 300 shares, resulting in an average stock price of ₹130 per share.',
   },
   {
-    question: 'Why is my average not the midpoint of my two buy prices?',
+    question: 'How to average stock price calculator works?',
     answer:
-      'Because the two purchases were different sizes. The simple midpoint only holds when you bought the same quantity at each price. Any difference in quantity pulls the average towards the price you bought more of, which is why buying larger amounts on the way down moves the average faster.',
+      'A stock average price calculator works by applying a weighted average formula: Total Money Invested ÷ Total Shares Held. Unlike a simple midpoint average, it weighs each transaction by the volume of shares purchased. This allows investors to plan "average down" strategies by calculating how many new shares at current market prices are needed to bring the overall cost basis down to a target price.',
+  },
+  {
+    question: 'Why is my average not the midpoint of my buy prices?',
+    answer:
+      'Your average price differs from the simple midpoint because the purchases were made with different share quantities. The weighted average shifts towards the price where you bought a larger quantity of shares. Buying larger volumes at lower prices pulls your overall average price down much faster.',
   },
   {
     question: 'How many shares do I need to reach a target average?',
     answer:
-      'It depends on the gap between the current price and the average you want. The calculator solves for the quantity directly, and it tells you when the target is unreachable — you cannot average down to a price below the market price, no matter how many shares you buy.',
+      'To reach a target average price, the calculator solves for the additional quantity needed at a given buy price using the formula: Shares Needed = (Total Invested − (Target Average × Total Shares)) ÷ (Target Average − New Buy Price). Note that you cannot average down to a target price below the current market buying price.',
   },
   {
     question: 'Is averaging down a good idea?',
     answer:
-      'It lowers your break-even price, which is a fact, not a strategy. Adding to a losing position also increases the money at risk in a single idea and only pays off if the original reason to buy still holds. Deciding your total position size and your exit before the first purchase is what keeps averaging from becoming a way to avoid a loss.',
+      'Averaging down lowers your break-even price on a stock position, but it also increases your total monetary risk in that single stock. It works best when fundamental analysis confirms the company remains strong and the price dip is temporary. Pre-determining your total maximum allocation prevents over-exposing your portfolio.',
   },
   {
     question: 'Does the average price include brokerage and taxes?',
     answer:
-      'This calculator averages the trade prices themselves. Your broker may show a slightly higher figure, because some contract notes fold charges into the cost of acquisition. For tax purposes the cost of acquisition is what matters, so check your contract note before using an average in a capital gains calculation.',
+      'This calculator averages the trade execution prices. Some brokers fold brokerage and transaction taxes into your cost of acquisition on contract notes. For tax purposes, refer to your broker contract note or tax P&L statement.',
   },
 ];
+

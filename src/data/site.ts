@@ -18,6 +18,12 @@ export const NAV_LINKS = [
 
 export const FOOTER_LINKS = [
   { href: '/#guide', label: 'Risk reward ratio guide' },
-  { href: '/win-rate-calculator/', label: 'Win rate calculator' },
-  { href: '/stock-average-calculator/', label: 'Stock average calculator' },
+  { href: '/about/', label: 'About us' },
+  { href: '/contact/', label: 'Contact us' },
+] as const;
+
+export const LEGAL_LINKS = [
+  { href: '/disclaimer/', label: 'Disclaimer' },
+  { href: '/terms/', label: 'Terms & Conditions' },
+  { href: '/privacy-policy/', label: 'Privacy Policy' },
 ] as const;
