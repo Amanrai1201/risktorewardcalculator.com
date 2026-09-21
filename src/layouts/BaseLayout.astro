@@ -67,13 +67,13 @@ const ogImage = new URL('/og.svg', Astro.site ?? SITE.url).href;
     <meta name="twitter:image" content={ogImage} />
 
     <meta name="theme-color" content="#ffffff" />
-    <link rel="icon" type="image/png" href="public/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="public/favicon.svg" />
-    <link rel="shortcut icon" href="public/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="public/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Risk Reward Calculator" />
     <link rel="manifest" href="/site.webmanifest" />
-    <link rel="icon" href="public/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     {jsonLd.map((data) => (

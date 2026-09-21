@@ -3,15 +3,21 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
+import cloudflare from '@astrojs/cloudflare';
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://risktorewardcalculator.com',
   trailingSlash: 'ignore',
   integrations: [sitemap()],
+
   build: {
     inlineStylesheets: 'auto',
   },
+
   vite: {
     plugins: [tailwindcss()],
   },
+
+  adapter: cloudflare(),
 });
