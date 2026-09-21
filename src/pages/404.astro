@@ -1,48 +1,75 @@
 ---
-import Layout from "../layouts/BaseLayout.astro";
-import Nav from "../components/site/Header.astro";
-import Footer from "../components/site/Footer.astro";
+import Layout from '../layouts/BaseLayout.astro';
 ---
 
 <Layout
   title="Page Not Found — Risk Reward Calculator"
-  description="That page doesn't exist. Jump to the risk reward calculator, win rate or stock average calculator instead."
+  description="That page doesn't exist. Jump to the risk reward calculator, win rate calculator, or stock average calculator instead."
   path="/404"
   noindex
 >
-  <main id="main" class="relative overflow-hidden">
-    <div
-      class="pointer-events-none absolute inset-x-0 -top-48 h-[28rem] mesh-gradient opacity-35 dark:opacity-25"
-      aria-hidden="true"
-    >
+  <main id="main" class="relative isolate overflow-hidden">
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[radial-gradient(circle_at_top,_rgba(0,208,156,0.18),_transparent_58%)]" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-canvas/50 to-canvas" aria-hidden="true"></div>
+
+    <div class="container-page relative py-12 sm:py-16 lg:py-20">
+      <div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+        <div class="max-w-xl">
+          <p class="text-caption font-semibold uppercase tracking-[0.18em] text-primary">Error 404</p>
+          <h1 class="mt-4 text-display-lg text-ink sm:text-display-xl">This page Does Not Exist</h1>
+          <p class="mt-4 text-body-lg text-ink-muted">
+            The link may be outdated or there may be a typo in the address. The calculators you
+            need are still right here, and they are built to help you make a cleaner decision.
+          </p>
+
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a
+              href="/"
+              class="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-3 text-body-sm font-semibold text-on-primary transition-colors duration-150 hover:bg-primary-hover"
+            >
+              Back to the home page
+            </a>
+            <a
+              href="/win-rate-calculator"
+              class="inline-flex items-center justify-center rounded-lg border border-hairline bg-canvas px-5 py-3 text-body-sm font-semibold text-ink transition-colors duration-150 hover:border-hairline-strong hover:bg-surface-1"
+            >
+              Open win rate calculator
+            </a>
+          </div>
+        </div>
+
+        <aside class="panel p-5 sm:p-6">
+          <div class="inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1.5 text-caption font-semibold uppercase tracking-[0.12em] text-gain">
+            Quick links
+          </div>
+
+          <div class="mt-5 space-y-3">
+            <a href="/" class="group flex items-center justify-between rounded-xl border border-hairline bg-surface-1 p-3 transition-colors hover:border-hairline-strong hover:bg-surface-2">
+              <div>
+                <div class="text-card-title font-semibold text-ink">Risk reward calculator</div>
+                <div class="text-body-sm text-ink-subtle">Measure the trade before you place it.</div>
+              </div>
+              <span class="text-body-sm font-medium text-primary transition-transform group-hover:translate-x-0.5">Go →</span>
+            </a>
+
+            <a href="/win-rate-calculator" class="group flex items-center justify-between rounded-xl border border-hairline bg-surface-1 p-3 transition-colors hover:border-hairline-strong hover:bg-surface-2">
+              <div>
+                <div class="text-card-title font-semibold text-ink">Win rate calculator</div>
+                <div class="text-body-sm text-ink-subtle">Find the percentage you need to break even.</div>
+              </div>
+              <span class="text-body-sm font-medium text-primary transition-transform group-hover:translate-x-0.5">Go →</span>
+            </a>
+
+            <a href="/stock-average-calculator" class="group flex items-center justify-between rounded-xl border border-hairline bg-surface-1 p-3 transition-colors hover:border-hairline-strong hover:bg-surface-2">
+              <div>
+                <div class="text-card-title font-semibold text-ink">Stock average calculator</div>
+                <div class="text-body-sm text-ink-subtle">Compare buy levels and average cost.</div>
+              </div>
+              <span class="text-body-sm font-medium text-primary transition-transform group-hover:translate-x-0.5">Go →</span>
+            </a>
+          </div>
+        </aside>
+      </div>
     </div>
-    <div
-      class="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-canvas/50 to-canvas"
-      aria-hidden="true"
-    >
-    </div>
-
-    <div class="container-page relative py-20 sm:py-28">
-      <p class="font-mono text-caption uppercase tracking-widest text-mute">Error 404</p>
-      <h1 class="mt-3 max-w-2xl text-display-lg text-ink sm:text-display-xl text-balance">
-        That page doesn't exist.
-      </h1>
-      <p class="mt-5 max-w-xl text-body-lg text-body">
-        The link may be out of date, or there may be a typo in the address. Everything the
-        site does is one click away below.
-      </p>
-
-      <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-        <a href="/" class="btn btn-primary">Back to the home page</a>
-        <a href="/win-rate-calculator" class="btn btn-secondary">Open the win rate calculator</a>
-        <a href="/stock-average-calculator" class="btn btn-secondary">Open the stock average calculator</a>
-      </div>
-
-      <div class="mt-16">
-        <h2 class="text-heading-lg text-ink">Other pages on the site</h2>
-      </div>
-
-
-      </div>
   </main>
 </Layout>
