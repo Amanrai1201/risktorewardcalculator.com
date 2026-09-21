@@ -13,7 +13,7 @@ export const NAV_LINKS = [
   { href: '/', label: 'Risk : Reward' },
   { href: '/win-rate-calculator/', label: 'Win rate' },
   { href: '/stock-average-calculator/', label: 'Stock average' },
-  { href: '/#guide', label: 'Guide' },
+  // { href: '/#guide', label: 'Guide' },
 ] as const;
 
 export const FOOTER_LINKS = [
