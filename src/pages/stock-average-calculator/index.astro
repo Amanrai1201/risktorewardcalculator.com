@@ -93,21 +93,7 @@ const READING = [
 ];
 ---
 
-<BaseLayout
-  {title}
-  {description}
-  path={calculator.href}
-  {jsonLd}
-  social={{
-    ogTitle: 'Stock Average Price Calculator | Calculate Weighted Average',
-    ogDescription: 'Calculate your weighted stock average buy price across multiple buys and determine break-even target prices.',
-    ogImage: '/images/stock-average-price-calculator.webp',
-    ogImageAlt: 'Stock average calculator interface showing weighted buy prices and total cash invested.',
-    ogImageWidth: 1200,
-    ogImageHeight: 675,
-    twitterTitle: 'Stock Average Calculator',
-  }}
->
+<BaseLayout {title} {description} path={calculator.href} {jsonLd}>
   <section class="container-page pt-8 pb-10 sm:pt-10 sm:pb-12">
     <div class="max-w-prose">
       <h1 class="text-display-lg">Stock Average Calculator</h1>
@@ -120,19 +106,6 @@ const READING = [
     <div class="mt-6 sm:mt-8">
       <StockAverageCalculator />
     </div>
-
-    <figure class="tool-preview-container mt-8">
-      <img
-        src="/images/stock-average-price-calculator.webp"
-        alt="Stock average calculator tool showing multiple stock purchases, weighted average buy price, total invested cash, and break-even targets."
-        title="Stock Average Price Calculator Interface"
-        width="1200"
-        height="675"
-        loading="lazy"
-        decoding="async"
-        class="h-auto max-w-full rounded-md border border-hairline shadow-md"
-      />
-    </figure>
   </section>
 
   <Section

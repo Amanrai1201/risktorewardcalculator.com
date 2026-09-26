@@ -20,8 +20,6 @@ export function webApplication(options: {
   name: string;
   description: string;
   path: string;
-  image?: string[];
-  operatingSystem?: string;
 }): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
@@ -30,8 +28,7 @@ export function webApplication(options: {
     description: options.description,
     url: absolute(options.path),
     applicationCategory: 'FinanceApplication',
-    operatingSystem: options.operatingSystem ?? 'Any modern browser',
-    ...(options.image && { image: options.image.map(absolute) }),
+    operatingSystem: 'Any modern browser',
     isAccessibleForFree: true,
     offers: {
       '@type': 'Offer',
