@@ -93,7 +93,21 @@ const READING = [
 ];
 ---
 
-<BaseLayout {title} {description} path={calculator.href} {jsonLd}>
+<BaseLayout
+  {title}
+  {description}
+  path={calculator.href}
+  {jsonLd}
+  social={{
+    ogTitle: 'Win Rate Calculator | Break-Even & Trading Expectancy',
+    ogDescription: 'Calculate trading win rate, required break-even win rate, and expected profit per trade.',
+    ogImage: '/images/win-rate-expectancy-calculator.webp',
+    ogImageAlt: 'Win rate calculator showing expectancy per trade and required win rate percentage.',
+    ogImageWidth: 1200,
+    ogImageHeight: 675,
+    twitterTitle: 'Trading Win Rate & Expectancy Calculator',
+  }}
+>
   <section class="container-page pt-8 pb-10 sm:pt-10 sm:pb-12">
     <div class="max-w-prose">
       <h1 class="text-display-lg">Win Rate Calculator</h1>
@@ -106,6 +120,19 @@ const READING = [
     <div class="mt-6 sm:mt-8">
       <WinRateCalculator />
     </div>
+
+    <figure class="tool-preview-container mt-8">
+      <img
+        src="/images/win-rate-expectancy-calculator.webp"
+        alt="Trading win rate calculator calculating win/loss ratio, break-even win rate required, and expectancy per trade in rupees or dollars."
+        title="Win Rate & Expectancy Calculator Interface"
+        width="1200"
+        height="675"
+        loading="lazy"
+        decoding="async"
+        class="h-auto max-w-full rounded-md border border-hairline shadow-md"
+      />
+    </figure>
   </section>
 
   <Section

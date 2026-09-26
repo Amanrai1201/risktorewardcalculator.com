@@ -15,12 +15,25 @@ interface Props {
   noindex?: boolean;
   /** JSON-LD objects emitted in the head. */
   jsonLd?: Record<string, unknown>[];
+  social?: {
+    ogTitle?: string;
+    ogDescription?: string;
+    ogImage?: string;
+    ogImageAlt?: string;
+    ogImageType?: string;
+    ogImageWidth?: number;
+    ogImageHeight?: number;
+    twitterTitle?: string;
+    twitterDescription?: string;
+    twitterImage?: string;
+  };
 }
 
-const { title, description, path, noindex = false, jsonLd = [] } = Astro.props;
+const { title, description, path, noindex = false, jsonLd = [], social = {} } = Astro.props;
 
 const canonical = new URL(path, Astro.site ?? SITE.url).href;
-const ogImage = new URL('/og.svg', Astro.site ?? SITE.url).href;
+const ogImage = new URL(social.ogImage ?? '/og.svg', Astro.site ?? SITE.url).href;
+const twitterImage = new URL(social.twitterImage ?? social.ogImage ?? '/og.svg', Astro.site ?? SITE.url).href;
 ---
 
 <!doctype html>
@@ -64,16 +77,19 @@ const ogImage = new URL('/og.svg', Astro.site ?? SITE.url).href;
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content={SITE.name} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:title" content={social.ogTitle ?? title} />
+    <meta property="og:description" content={social.ogDescription ?? description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image:secure_url" content={ogImage} />
+    {social.ogImageType && <meta property="og:image:type" content={social.ogImageType} />}
+    <meta property="og:image:width" content={String(social.ogImageWidth ?? 1200)} />
+    <meta property="og:image:height" content={String(social.ogImageHeight ?? 630)} />
+    {social.ogImageAlt && <meta property="og:image:alt" content={social.ogImageAlt} />}
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:title" content={social.twitterTitle ?? social.ogTitle ?? title} />
+    <meta name="twitter:description" content={social.twitterDescription ?? social.ogDescription ?? description} />
+    <meta name="twitter:image" content={twitterImage} />
 
     <meta name="theme-color" content="#ffffff" />
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />

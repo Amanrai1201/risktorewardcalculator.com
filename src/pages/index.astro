@@ -22,7 +22,16 @@ const description =
   'Free Risk Reward Calculator, Win Rate Calculator & Stock Average Calculator. Calculate risk reward ratio, forex risk reward, win rate formula, brokerage, and average cost.';
 
 const jsonLd = [
-  webApplication({ name: calculator.name, description, path: '/' }),
+  webApplication({
+    name: calculator.name,
+    description,
+    path: '/',
+    operatingSystem: 'All',
+    image: [
+      '/images/stock-trading-position-size-calculator-net-risk.webp',
+      '/images/risk-to-reward-calculator-with-charges.webp',
+    ],
+  }),
   faqPage(HOME_FAQS),
   webSite(),
 ];
@@ -95,7 +104,23 @@ const CHARGES = [
 ];
 ---
 
-<BaseLayout {title} {description} path="/" {jsonLd}>
+<BaseLayout
+  {title}
+  {description}
+  path="/"
+  {jsonLd}
+  social={{
+    ogTitle: 'Free Risk To Reward Calculator | Includes Broker Fees',
+    ogDescription: 'Calculate true net risk-to-reward ratios and required win rates. Factor in broker fees and transaction charges automatically.',
+    ogImage: '/images/stock-trading-position-size-calculator-net-risk.webp',
+    ogImageAlt: 'Stock trading position size calculator showing net risk with broker fees included.',
+    ogImageType: 'image/webp',
+    ogImageWidth: 1200,
+    ogImageHeight: 675,
+    twitterTitle: 'Free Net Risk To Reward Calculator (with Fees)',
+    twitterDescription: 'Calculate position size, stock average price, and true risk-reward ratio inclusive of all trading charges.',
+  }}
+>
   <section class="container-page pt-8 pb-10 sm:pt-10 sm:pb-12">
     <div class="max-w-prose">
       <h1 class="text-display-lg">Risk to Reward Calculator</h1>
@@ -109,6 +134,29 @@ const CHARGES = [
     <div class="mt-6 sm:mt-8">
       <RiskRewardCalculator />
     </div>
+
+    <figure class="tool-preview-container mt-8 grid gap-4">
+      <img
+        src="/images/stock-trading-position-size-calculator-net-risk.webp"
+        alt="Stock trading position size calculator interface showing net risk calculation, risk-reward ratio, and included broker transaction fees."
+        title="Risk to Reward Calculator with Broker Fees Included"
+        width="1200"
+        height="675"
+        loading="eager"
+        decoding="async"
+        class="h-auto max-w-full rounded-md border border-hairline shadow-md"
+      />
+      <img
+        src="/images/risk-to-reward-calculator-with-charges.webp"
+        alt="Risk to reward calculator dashboard displaying entry price, target price, break-even win rate, and net profit minus brokerage charges."
+        title="Risk to Reward Calculator Dashboard"
+        width="1200"
+        height="675"
+        loading="lazy"
+        decoding="async"
+        class="h-auto max-w-full rounded-md border border-hairline shadow-md"
+      />
+    </figure>
   </section>
 
 
