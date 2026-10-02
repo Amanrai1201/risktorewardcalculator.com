@@ -1,0 +1,50 @@
+TITLE: How Much Should You Risk Per Trade? The 1% Capital Rule Explained
+SLUG: 1-percent-risk-rule-position-sizing
+META_TITLE: The 1% Risk Rule in Trading: Position Sizing Formula & Guide
+META_DESCRIPTION: Master the 1% risk rule for stock, forex, and crypto trading. Calculate share quantity using capital risk rather than cash balance.
+KEYWORDS: 1 percent risk rule, position sizing calculator, risk management trading, stop loss position size formula
+CATEGORY: Risk Management
+
+--- ARTICLE CONTENT ---
+
+The 1% Risk Rule is a fundamental pillar of professional capital preservation. It dictates that a trader should never risk more than 1% of their total account equity on a single trade setup.
+
+Many beginner traders confuse Position Size with Capital at Risk, leading to improper trade allocation.
+
+THE 1% RULE IN PRACTICE:
+Total Account Capital : ₹5,00,000
+Maximum Allowed Risk  : 1% = ₹5,000 (Maximum loss if Stop Loss is hit)
+
+INCORRECT APPROACH: Buy ₹5,000 worth of stock total
+CORRECT APPROACH  : Calculate share quantity so that (Entry - SL) * Qty plus execution fees = ₹5,000
+
+The Position Sizing Formula
+
+To apply the 1% rule, derive share quantity based on stop-loss distance rather than fixed cash allocation:
+Account Risk (₹) = Total Capital * 0.01
+Risk Per Share (₹) = Entry Price - Stop Loss Price
+Max Position Size (Shares) = Account Risk (₹) / (Risk Per Share (₹) + Per-Share Charges)
+
+Mathematical Worked Example:
+- Account Capital: ₹2,00,000
+- Maximum Risk (1%): ₹2,00,000 * 0.01 = ₹2,000
+- Stock Entry Price: ₹250
+- Stop Loss Price: ₹240
+- Risk Per Share (Price Distance): ₹10
+- Raw Quantity = ₹2,000 / ₹10 = 200 Shares
+
+Total Position Capital Value: 200 * ₹250 = ₹50,000 (25% of total account capital)
+Maximum Monetary Risk if Stopped Out: 200 * ₹10 = ₹2,000 (Exactly 1% of account capital)
+
+Mathematical Survival Proof: 1% Rule vs. 5% Fixed Allocation (10 Losing Trades from ₹1,00,000):
+- Capital (1% Fixed Risk): Starts ₹1,00,000 -> Trade 10: ₹90,438 (-9.56% drawdown)
+- Capital (5% Fixed Risk): Starts ₹1,00,000 -> Trade 10: ₹59,873 (-40.13% drawdown)
+- Capital (Unmanaged 10% Risk): Starts ₹1,00,000 -> Trade 10: ₹34,868 (-65.13% drawdown)
+
+--- FAQ SECTION ---
+
+Q: Can aggressive accounts use a 2% or 3% risk rule?
+A: Yes. Experienced traders with proven positive statistical expectancy sometimes risk 2% per trade. However, risking 3% or more significantly increases drawdown risk during market anomalies, requiring higher win rates to recover capital.
+
+Q: How does portfolio leverage affect the 1% risk rule?
+A: Leverage increases total buying power, but the 1% risk rule must always be calculated against your underlying account equity, not leveraged buying limits.

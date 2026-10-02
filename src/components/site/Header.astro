@@ -1,6 +1,7 @@
 ---
 import { NAV_LINKS } from '../../data/site';
 import ThemeToggle from './ThemeToggle.astro';
+import BookmarkButton from './BookmarkButton.astro';
 
 const here = Astro.url.pathname;
 const isCurrent = (href: string) => (href === '/' ? here === '/' : here.startsWith(href));
@@ -40,6 +41,7 @@ const isCurrent = (href: string) => (href === '/' ? here === '/' : here.startsWi
           })}
         </ul>
       </nav>
+      <BookmarkButton />
       <div class="">
         <ThemeToggle />
       </div>

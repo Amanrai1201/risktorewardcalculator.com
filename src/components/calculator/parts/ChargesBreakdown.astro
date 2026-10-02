@@ -28,54 +28,74 @@ const rows = atTarget.lines.map((line) => ({
 }));
 ---
 
-<Card title="Estimated charges" subtitle="Both legs of the round trip, priced twice.">
-  <div class="-mx-1 overflow-x-auto">
-    <table class="w-full min-w-[22rem] border-collapse text-body-sm">
+<Card
+  title="Estimated charges"
+  subtitle="Both legs of the round trip, priced twice."
+>
+  <div class="overflow-x-auto">
+    <table class="w-full min-w-[36rem] border-collapse text-body-sm">
       <caption class="sr-only">
         Estimated brokerage, taxes and fees for the round trip, shown for the target exit and the
         stop exit.
       </caption>
+
       <thead>
         <tr class="border-b border-hairline">
-          <th scope="col" class="px-1 pb-2 text-left font-medium text-ink-subtle">
+          <th scope="col" class="px-2 pb-3 text-left font-medium text-ink-subtle">
             Charge
           </th>
-          <th scope="col" class="px-1 pb-2 text-right font-medium text-ink-subtle">
+
+          <th scope="col" class="px-2 pb-3 text-right font-medium text-ink-subtle">
             If target hits
           </th>
-          <th scope="col" class="px-1 pb-2 text-right font-medium text-ink-subtle">
+
+          <th scope="col" class="px-2 pb-3 text-right font-medium text-ink-subtle">
             If stop hits
           </th>
         </tr>
       </thead>
+
       <tbody data-charges-body>
         {rows.map((row) => (
           <tr class="border-b border-hairline last:border-0">
-            <th scope="row" class="px-1 py-2 text-left font-normal">
+            <th scope="row" class="px-2 py-3 text-left font-normal">
               <span class="text-ink">{row.label}</span>
-              {row.note && <span class="block text-caption text-ink-subtle">{row.note}</span>}
+
+              {row.note && (
+                <span class="block text-caption text-ink-subtle">
+                  {row.note}
+                </span>
+              )}
             </th>
-            <td class="figures px-1 py-2 text-right text-ink">
+
+            <td class="figures px-2 py-3 text-right text-ink">
               {formatMoney(row.amount, currency)}
             </td>
-            <td class="figures px-1 py-2 text-right text-ink">
+
+            <td class="figures px-2 py-3 text-right text-ink">
               {formatMoney(row.atStop, currency)}
             </td>
           </tr>
         ))}
       </tbody>
+
       <tfoot>
         <tr class="border-t-2 border-hairline-strong">
-          <th scope="row" class="px-1 pt-2 text-left font-semibold text-ink">
+          <th scope="row" class="px-2 pt-3 text-left font-semibold text-ink">
             Total estimated charges
           </th>
+
           <td
-            class="figures px-1 pt-2 text-right font-semibold text-ink"
+            class="figures px-2 pt-3 text-right font-semibold text-ink"
             data-field="totalAtTarget"
           >
             {formatMoney(atTarget.total, currency)}
           </td>
-          <td class="figures px-1 pt-2 text-right font-semibold text-ink" data-field="totalAtStop">
+
+          <td
+            class="figures px-2 pt-3 text-right font-semibold text-ink"
+            data-field="totalAtStop"
+          >
             {formatMoney(atStop.total, currency)}
           </td>
         </tr>
@@ -83,8 +103,11 @@ const rows = atTarget.lines.map((line) => ({
     </table>
   </div>
 
-  <p class="mt-4 text-caption text-ink-subtle">
-    <span data-field="chargeSource">{equityChargeNote(sourceName, verifiedLabel)}</span>
+  <p class="mt-5 text-caption text-ink-subtle">
+    <span data-field="chargeSource">
+      {equityChargeNote(sourceName, verifiedLabel)}
+    </span>
+
     <a
       href={sourceUrl}
       rel="nofollow noopener"

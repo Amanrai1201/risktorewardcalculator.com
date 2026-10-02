@@ -57,13 +57,8 @@ const exchangeOptions = Object.entries(EXCHANGES).map(([id, meta]) => ({
 <form
   id="rr-form"
   novalidate
-  class="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:items-start lg:gap-6"
+  class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start"
 >
-  <StickySummary
-    ratio={formatRatio(result.netRatio)}
-    netReward={formatMoney(result.netReward, 'INR')}
-    netRisk={formatMoney(result.netRisk, 'INR')}
-  />
 
   <!-- Inputs -->
   <div class="space-y-4">
@@ -290,21 +285,24 @@ const exchangeOptions = Object.entries(EXCHANGES).map(([id, meta]) => ({
 
   <!-- Results -->
   <div class="mt-4 space-y-4 lg:mt-0">
-    <ResultsPanel
-      result={result}
-      currency="INR"
-      unitLabel="share"
-      winRatePercent={s.winRatePercent}
-    />
-    <ChargesBreakdown
-      atTarget={result.chargesAtTarget}
-      atStop={result.chargesAtStop}
-      currency="INR"
-      sourceName={broker.name}
-      sourceUrl={broker.sourceUrl}
-      verifiedLabel={RATES_VERIFIED_LABEL}
-    />
-  </div>
+  <ResultsPanel
+    result={result}
+    currency="INR"
+    unitLabel="share"
+    winRatePercent={s.winRatePercent}
+  />
+</div>
+
+<div class="lg:col-span-2">
+  <ChargesBreakdown
+    atTarget={result.chargesAtTarget}
+    atStop={result.chargesAtStop}
+    currency="INR"
+    sourceName={broker.name}
+    sourceUrl={broker.sourceUrl}
+    verifiedLabel={RATES_VERIFIED_LABEL}
+  />
+</div>
 </form>
 
 <script>

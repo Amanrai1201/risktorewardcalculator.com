@@ -1,0 +1,73 @@
+TITLE: Why an 80% Win Rate Strategy Can Still Bankrupt Your Demat Account
+SLUG: why-high-win-rate-strategies-fail
+META_TITLE: Why an 80% Win Rate Strategy Fails in Trading | Expectancy Formula
+META_DESCRIPTION: Discover why an 80% win rate strategy can lead to trading losses. Learn the mathematical expectancy formula and break-even win rate matrix.
+KEYWORDS: win rate vs risk reward ratio, expectancy formula trading, break even win rate calculator, trading psychology profit
+CATEGORY: Risk Management
+
+--- ARTICLE CONTENT ---
+
+A common misconception among beginner traders is that a high win rate guarantees profitability. In financial markets, win rate is only one half of an equation. Without proper risk-to-reward calibration, an 80% win rate strategy can lead to total capital exhaustion.
+
+THE HIGH WIN RATE ILLUSION:
+- 8 WINNING TRADES : +₹1,000 each = +₹8,000 Gross
+- 2 LOSING TRADES  : -₹5,000 each = -₹10,000 Gross
+--------------------------------------------------
+- GROSS P&L        : -₹2,000 Loss
+- EXECUTION FEES   : -₹1,200 (10 trades round-trip)
+- FINAL NET P&L    : -₹3,200 NET LOSS
+
+The Expectancy Formula
+
+Mathematical expectancy defines the average amount a trader can expect to win (or lose) per rupee risked over a sample size of trades:
+E = (W * R_net) - ((1 - W) * 1)
+
+Where:
+- E = Mathematical Expectancy per trade (in R-multiples)
+- W = Win Rate (expressed as a decimal)
+- R_net = Net Risk-to-Reward Ratio (Net Reward / Net Risk)
+
+If E > 0, the trading system possesses a positive statistical edge. If E < 0, the system will deplete capital over time regardless of how frequently individual trades win.
+
+Comparing Three Trading Strategies:
+
+Strategy A (High Win Rate):
+- Win Rate: 80% (0.80)
+- Net R:R: 1:0.25
+- Avg Win: ₹250
+- Avg Loss: ₹1,000
+- Expectancy per Trade: -₹0.00 (Break-Even)
+- Net P&L over 100 Trades: ₹0 (Minus Fees = Net Loss)
+
+Strategy B (Balanced):
+- Win Rate: 50% (0.50)
+- Net R:R: 1:1.50
+- Avg Win: ₹1,500
+- Avg Loss: ₹1,000
+- Expectancy per Trade: +₹250 (Positive Edge)
+- Net P&L over 100 Trades: +₹25,000 Profit
+
+Strategy C (Asymmetric R:R):
+- Win Rate: 30% (0.30)
+- Net R:R: 1:3.00
+- Avg Win: ₹3,000
+- Avg Loss: ₹1,000
+- Expectancy per Trade: +₹200 (Positive Edge)
+- Net P&L over 100 Trades: +₹20,000 Profit
+
+The Break-Even Win Rate Matrix:
+Break-Even Win Rate (%) = (1 / (1 + R_net)) * 100
+
+- Net R:R 1:0.5 -> Required Win Rate: 66.67%
+- Net R:R 1:1.0 -> Required Win Rate: 50.00%
+- Net R:R 1:1.5 -> Required Win Rate: 40.00%
+- Net R:R 1:2.0 -> Required Win Rate: 33.33%
+- Net R:R 1:3.0 -> Required Win Rate: 25.00%
+
+--- FAQ SECTION ---
+
+Q: Why do traders naturally gravitate toward high win rate strategies?
+A: Cognitive psychology leads human brains to equate winning frequency with competence. Accepting small, frequent wins feels satisfying, but avoiding stop-losses often leads traders to hold losing positions too long, causing large drawdowns that erase multiple gains.
+
+Q: What is a sustainable net risk-to-reward ratio for day trading?
+A: A net ratio between 1:1.5 and 1:2.5 (after accounting for execution charges) provides a sustainable balance for day trading. It allows profitability even if win rates fluctuate between 40% and 50%.

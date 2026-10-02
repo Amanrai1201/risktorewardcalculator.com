@@ -1,0 +1,49 @@
+<button
+  type="button"
+  id="bookmark-site"
+  aria-label="Bookmark this website"
+  title="Bookmark this website"
+  class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-ink-muted transition-colors duration-150 hover:bg-surface-1 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+>
+  <svg
+    class="size-5 shrink-0"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    stroke-width="1.8"
+    aria-hidden="true"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M5.25 4.5A1.5 1.5 0 016.75 3h10.5a1.5 1.5 0 011.5 1.5v16.125L12 16.5l-6.75 4.125V4.5z"
+    ></path>
+  </svg>
+</button>
+
+<script>
+  function initBookmarkButton() {
+    const button = document.getElementById('bookmark-site');
+    if (!button || button.hasAttribute('data-has-listener')) return;
+
+    button.setAttribute('data-has-listener', 'true');
+    button.addEventListener('click', () => {
+      // Chromium exposes a native bookmark dialog; other browsers use the shortcut.
+      const browserWindow = window as Window & { showSaveFilePicker?: unknown };
+      const bookmarkShortcut = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘D' : 'Ctrl+D';
+      if ('sidebar' in window && typeof (window as any).sidebar?.addPanel === 'function') {
+        (window as any).sidebar.addPanel(document.title, window.location.href, '');
+        return;
+      }
+      if ('external' in window && typeof (window as any).external?.AddFavorite === 'function') {
+        (window as any).external.AddFavorite(window.location.href, document.title);
+        return;
+      }
+      // Browser APIs do not expose a general bookmark action; give a helpful fallback.
+      window.alert(`To bookmark this website, press ${bookmarkShortcut}.`);
+    });
+  }
+
+  initBookmarkButton();
+  document.addEventListener('astro:after-swap', initBookmarkButton);
+</script>

@@ -1,0 +1,66 @@
+TITLE: When to Average Down a Losing Stock (And When It Will Wipe You Out)
+SLUG: when-to-average-down-stocks
+META_TITLE: When to Average Down a Stock | Weighted Cost Basis Formula
+META_DESCRIPTION: Learn how to calculate weighted average cost basis when scaling into stocks. Compare fixed share vs fixed capital averaging down strategies.
+KEYWORDS: stock average price calculator, averaging down strategy, weighted average cost basis, break-even stock price
+CATEGORY: Position Sizing
+
+--- ARTICLE CONTENT ---
+
+Averaging down—purchasing additional shares of a declining stock to lower the average entry price—is a common technique in equity investing. When applied systematically to high-quality assets, it lowers the required break-even point. When applied recklessly to deteriorating assets, it concentrates risk and accelerates losses.
+
+AVERAGING DOWN DYNAMICS:
+Initial Purchase: 100 Shares @ ₹100 --> Total Spend: ₹10,000
+Stock Drops to: ₹60 (-40%)
+
+SCENARIO A: Do Nothing
+- New Price: ₹60
+- Break-Even Needed: +66.7%
+- Total Capital Risk: ₹10,000
+
+SCENARIO B: Buy 100 More @ ₹60
+- New Average Cost: ₹80
+- Break-Even Needed: +33.3%
+- Total Capital Risk: ₹16,000
+
+The Mathematics of Weighted Average Price
+
+The cost basis of a scaled position is governed by a weighted average calculation:
+P_avg = Sum(P_i * Q_i) / Sum(Q_i)
+
+Where:
+- P_avg = Weighted Average Cost Basis
+- P_i = Execution Price of tranches i
+- Q_i = Quantity purchased in tranches i
+
+Quantitative Comparison: Fixed Share vs. Fixed Capital Scaling
+
+Assume an investor buys an initial tranche of 100 shares at ₹500 and the stock drops sequentially to ₹400 and ₹300.
+
+Method 1: Fixed Share Quantity (100 Shares per Tranche)
+- Tranche 1: 100 shares @ ₹500 = ₹50,000
+- Tranche 2: 100 shares @ ₹400 = ₹40,000
+- Tranche 3: 100 shares @ ₹300 = ₹30,000
+P_avg = ₹120,000 / 300 = ₹400.00
+To break even from ₹300, the stock must recover by +33.33%.
+
+Method 2: Fixed Rupee Amount (₹50,000 per Tranche - Value Averaging)
+- Tranche 1: 100.0 shares @ ₹500 = ₹50,000
+- Tranche 2: 125.0 shares @ ₹400 = ₹50,000
+- Tranche 3: 166.6 shares @ ₹300 = ₹50,000
+P_avg = ₹150,000 / 391.6 = ₹383.04
+To break even from ₹300, the stock must recover by +27.68%.
+
+EVALUATION DECISION TREE:
+1. Fundamental thesis INTACT (Strong Balance Sheet, Sector-wide dip):
+   -> SCALE IN SYSTEMATICALLY
+2. Fundamental thesis BROKEN (Deteriorating Earnings, High Debt):
+   -> CUT LOSS IMMEDIATELY
+
+--- FAQ SECTION ---
+
+Q: Why is averaging down dangerous for intraday traders?
+A: Intraday trades rely on momentum and structural leverage. Averaging down on a declining intraday position violates risk management, increases position size as price moves against you, and often leads to margin calls or auto-square-off losses.
+
+Q: What is the difference between Dollar-Cost Averaging (DCA) and averaging down?
+A: Dollar-Cost Averaging (DCA) is a scheduled, asset-agnostic investment plan executed over time regardless of market direction. Averaging down is a reactive decision to buy additional shares specifically because an asset's price has declined.

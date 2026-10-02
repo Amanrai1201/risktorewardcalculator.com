@@ -23,19 +23,40 @@ const chevronClass =
 ---
 
 <section {id} class="border-t border-hairline">
-  <div class="container-page py-10 sm:py-14">
-    <h2 class="text-display-md">{title}</h2>
+  <div class="container-page py-16 sm:py-20">
 
-    <div class="mt-6 max-w-prose border-t border-hairline">
+    <!-- Heading -->
+    <h2 class="text-center text-display-md">
+      {title}
+    </h2>
+
+    <!-- FAQ List -->
+    <div class="mx-auto mt-12 max-w-4xl space-y-4">
+
       {faqs.map((faq) => (
-        <details class="group border-b border-hairline">
-          <summary class={summaryClass}>
-            <h3 class="text-body font-medium text-ink">{faq.question}</h3>
-            <Chevron class={chevronClass} />
+        <details
+          class="group rounded-xl border border-gray-200  shadow-sm"
+        >
+          <summary
+            class="flex cursor-pointer list-none items-center justify-between px-6 py-6 text-body font-medium"
+          >
+            <h3 class="text-ink">
+              {faq.question}
+            </h3>
+
+            <Chevron
+              class="ml-4 h-5 w-5 shrink-0 text-gray-500 transition-transform duration-200 group-open:rotate-180"
+            />
           </summary>
-          <p class="pb-4 text-body-sm text-ink-muted">{faq.answer}</p>
+
+          <div class="px-6 pb-6">
+            <p class="text-body-sm leading-6 text-ink-muted">
+              {faq.answer}
+            </p>
+          </div>
         </details>
       ))}
+
     </div>
   </div>
 </section>

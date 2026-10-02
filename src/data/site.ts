@@ -13,11 +13,13 @@ export const NAV_LINKS = [
   { href: '/', label: 'Risk : Reward' },
   { href: '/win-rate-calculator/', label: 'Win rate' },
   { href: '/stock-average-calculator/', label: 'Stock average' },
+  { href: '/articles/', label: 'Articles' },
   // { href: '/#guide', label: 'Guide' },
 ] as const;
 
 export const FOOTER_LINKS = [
   { href: '/#guide', label: 'Risk reward ratio guide' },
+  { href: '/articles/', label: 'Trading articles' },
   { href: '/about/', label: 'About us' },
   { href: '/contact/', label: 'Contact us' },
 ] as const;

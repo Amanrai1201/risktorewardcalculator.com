@@ -1,13 +1,7 @@
 ---
 import { CALCULATORS, otherCalculators } from '../../data/calculators';
 
-/**
- * Cross-links between the calculators. Driven by the registry, so a new
- * calculator appears here as soon as it is added to `data/calculators.ts`.
- */
-
 interface Props {
-  /** Calculator id to leave out. Omit to list all of them. */
   current?: string;
 }
 
@@ -16,14 +10,28 @@ const items = current ? otherCalculators(current) : CALCULATORS;
 const columns = items.length > 2 ? 'sm:grid-cols-2 lg:grid-cols-3' : 'sm:grid-cols-2';
 
 const cardClass =
-  'panel block p-4 transition-colors duration-150 hover:border-hairline-strong hover:bg-surface-1';
+  'group flex min-h-[190px] flex-col rounded-xl border border-hairline bg-surface-0 p-5 transition-all duration-200 hover:border-hairline-strong hover:bg-surface-1 hover:-translate-y-0.5 sm:p-6';
 ---
 
-<div class:list={['grid gap-3', columns]}>
+<div class:list={['grid gap-4', columns]}>
   {items.map((item) => (
     <a href={item.href} class={cardClass}>
-      <span class="block text-card-title text-ink">{item.name}</span>
-      <span class="mt-1 block text-body-sm text-ink-muted">{item.blurb}</span>
+      <div>
+        <span class="block text-card-title text-ink">
+          {item.name}
+        </span>
+
+        <span class="mt-2 block text-body-sm leading-6 text-ink-muted">
+          {item.blurb}
+        </span>
+      </div>
+
+      <span
+        class="mt-auto inline-flex items-center gap-1.5 pt-7 text-sm font-medium text-ink transition-transform duration-200 group-hover:translate-x-1"
+      >
+        Open Calculator
+        <span aria-hidden="true">→</span>
+      </span>
     </a>
   ))}
 </div>

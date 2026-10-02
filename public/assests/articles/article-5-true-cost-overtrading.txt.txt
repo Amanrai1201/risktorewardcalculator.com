@@ -1,0 +1,47 @@
+TITLE: The True Cost of Overtrading: How Brokerage Eats 50% of Retail Profits
+SLUG: true-cost-of-overtrading-brokerage
+META_TITLE: The True Cost of Overtrading: Brokerage & STT Impact Analysis
+META_DESCRIPTION: Calculate how daily overtrading depletes retail trading capital through brokerage, STT, and turnover charges in Indian equity markets.
+KEYWORDS: overtrading costs India, net P&L vs gross P&L, contract note charges calculator, high frequency trading fees
+CATEGORY: Trading Psychology
+
+--- ARTICLE CONTENT ---
+
+Overtrading—taking excessive trade volume within a short period—is a major contributor to retail capital loss. Beyond psychological fatigue, the primary damage caused by overtrading is execution friction. Each order incurs statutory fees regardless of trade profitability.
+
+GROSS PROFIT vs. NET REALIZED PROFIT (20 Trades / Day - Intraday Equity):
+Gross Daily Profit  : +₹2,000
+Daily Total Charges : -₹1,200 (Brokerage, STT, Exchange Fees, GST)
+Actual Daily Net    : +₹800 (60% of profits lost to friction)
+
+MONTHLY IMPACT (20 Trading Days):
+Gross Profit        : +₹40,000
+Total Friction Costs: -₹24,000
+Net Realized Profit : +₹16,000
+
+The Mathematical Breakdown of Daily Overtrading
+
+Below is a fee simulation for a trader performing 10 round-trip trades per day (20 executed orders) on equity intraday setups with an average order value of ₹1,00,000 per leg:
+- Leg 1 (Buy): Brokerage ₹20.00 + STT ₹0.00 + Exchange Fee ₹2.97 + Stamp/GST ₹7.13 = ₹30.10
+- Leg 2 (Sell): Brokerage ₹20.00 + STT ₹25.00 + Exchange Fee ₹2.97 + Stamp/GST ₹4.13 = ₹52.10
+- Per Trade Cost: ₹82.20
+- 10 Trades / Day: ₹822.00 total daily friction
+
+Cumulative Friction vs. Trade Frequency (Monthly View - 22 Days):
+- 2 Trades/Day  : ₹1,808 monthly fees
+- 10 Trades/Day : ₹9,042 monthly fees
+- 20 Trades/Day : ₹18,084 monthly fees
+- 30 Trades/Day : ₹27,126 monthly fees
+
+Strategies to Mitigate Overtrading Costs:
+1. Establish a Daily Trade Cap: Limit trading activity to 2 or 3 high-probability setups per session.
+2. Implement a Minimum Net R:R Filter: Filter out trade setups where projected fees exceed 15% of gross profit targets.
+3. Transition to High-Timeframe Setups: Swing trading setups generate fewer transactions per month, reducing the impact of flat brokerage fees and turnover taxes relative to profit targets.
+
+--- FAQ SECTION ---
+
+Q: Does zero-brokerage delivery trading eliminate all friction costs?
+A: No. While some brokers offer zero brokerage on equity delivery, statutory charges still apply, including 0.1% STT on both buy and sell legs, exchange turnover fees, GST, state stamp duty, and flat DP (Depository Participant) charges upon selling.
+
+Q: What percentage of trading capital is typically lost to transaction costs by active day traders?
+A: High-frequency intraday traders often spend 15% to 40% of their starting account equity annually purely on brokerage, transaction fees, and statutory taxes.

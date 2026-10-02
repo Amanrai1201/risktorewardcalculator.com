@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/site/Section.astro';
+import RelatedCalculators from '../../components/site/RelatedCalculators.astro';
+import { ARTICLES, CATEGORY_COLORS } from '../../data/articles';
+import { breadcrumbs, articleListSchema, faqPage } from '../../lib/schema';
+
+const title = 'Trading Articles | Risk Reward, Win Rate & Position Sizing Guides';
+const description =
+  'In-depth articles on risk-to-reward ratio, win rate, position sizing, brokerage charges, and trading psychology for Indian retail traders on Zerodha, Groww, and Angel One.';
+
+const jsonLd = [
+  breadcrumbs([
+    { name: 'Home', path: '/' },
+    { name: 'Articles', path: '/articles/' },
+  ]),
+  articleListSchema(ARTICLES),
+];
+---
+
+<BaseLayout {title} {description} path="/articles/" {jsonLd}>
+  <section class="container-page pt-8 pb-10 sm:pt-10 sm:pb-12">
+    <div class="max-w-prose">
+      <p class="text-eyebrow uppercase text-ink-subtle tracking-wider mb-3">Articles</p>
+      <h1 class="text-display-lg">Trading Guides & Deep Dives</h1>
+      <p class="mt-3 text-body-lg text-ink-muted">
+        Practical, numbers-first articles on risk management, brokerage charges, position sizing,
+        and the mathematics that separate profitable traders from the rest.
+      </p>
+    </div>
+  </section>
+
+  <section class="container-page pb-12">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {ARTICLES.map((article) => {
+        const colors = CATEGORY_COLORS[article.category] ?? {
+          bg: 'bg-surface-2',
+          text: 'text-ink-subtle',
+        };
+        return (
+          <a
+            href={`/articles/${article.slug}/`}
+            class="panel block p-5 sm:p-6 transition-colors duration-150 hover:border-hairline-strong hover:bg-surface-1 group"
+            aria-label={article.title}
+          >
+            <span
+              class:list={[
+                'inline-block px-2 py-0.5 rounded-xs text-caption font-semibold mb-3',
+                colors.bg,
+                colors.text,
+              ]}
+            >
+              {article.category}
+            </span>
+            <span class="block text-card-title text-ink group-hover:text-accent transition-colors duration-150">
+              {article.title}
+            </span>
+            <span class="mt-2 block text-body-sm text-ink-muted line-clamp-3">
+              {article.metaDescription}
+            </span>
+            <span class="mt-4 flex items-center gap-1 text-caption font-semibold text-accent">
+              Read article
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+                class="transition-transform duration-150 group-hover:translate-x-0.5"
+              >
+                <path
+                  d="M3 8h10M9 4l4 4-4 4"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+
+  <Section
+    id="calculators"
+    title="Free Trading Calculators"
+    lead="Use these tools alongside the articles."
+    tone="surface"
+  >
+    <RelatedCalculators />
+  </Section>
+</BaseLayout>

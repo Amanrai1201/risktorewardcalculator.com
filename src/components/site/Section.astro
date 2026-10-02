@@ -20,11 +20,7 @@ interface Props extends HTMLAttributes<'section'> {
 const { title, id, lead, tone = 'canvas', class: className, ...rest } = Astro.props;
 ---
 
-<section
-  {id}
-  class:list={['border-t border-hairline', tone === 'surface' && 'bg-surface-1', className]}
-  {...rest}
->
+<section {id} {...rest}>
   <div class="container-page py-10 sm:py-14">
     <h2 class="text-display-md">{title}</h2>
     {lead && <p class="mt-3 max-w-prose text-body-lg text-ink-muted">{lead}</p>}

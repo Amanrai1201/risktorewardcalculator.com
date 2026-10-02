@@ -22,31 +22,26 @@ export const HOME_FAQS: Faq[] = [
     answer:
       'To calculate risk to reward ratio, measure the distance from your entry price to your stop loss (Risk per share) and the distance from your entry price to your profit target (Reward per share). Divide the reward per share by the risk per share and write it as 1 : n. For instance, buying at ₹100 with a stop loss at ₹95 (₹5 risk) and a target at ₹115 (₹15 reward) gives a risk to reward ratio of 1 : 3.',
   },
-  {
-    question: 'How to calculate risk reward ratio in trading?',
-    answer:
-      'In trading, calculate the risk reward ratio using the formula: Risk = |Entry Price − Stop Loss| and Reward = |Target Price − Entry Price|. The ratio is expressed as 1 : (Reward ÷ Risk). For long positions, Risk = Entry − Stop Loss and Reward = Target − Entry. For short positions, Risk = Stop Loss − Entry and Reward = Entry − Target. Factoring in brokerage, taxes, and slippage gives your true net risk reward ratio.',
-  },
-  {
-    question: 'How to calculate risk reward ratio in forex?',
-    answer:
-      'To calculate risk reward ratio in forex, measure your stop loss and take profit distances in pips or US dollars. Divide the target profit in pips by your stop loss in pips. For instance, risking 20 pips to gain 60 pips on EUR/USD yields a 20 : 60 ratio, simplified to 1 : 3. In lot sizes (standard, mini, micro), multiply pip values by lot count and include spread and commission costs for an accurate net ratio.',
-  },
+  // {
+  //   question: 'How to calculate risk reward ratio in forex?',
+  //   answer:
+  //     'To calculate risk reward ratio in forex, measure your stop loss and take profit distances in pips or US dollars. Divide the target profit in pips by your stop loss in pips. For instance, risking 20 pips to gain 60 pips on EUR/USD yields a 20 : 60 ratio, simplified to 1 : 3. In lot sizes (standard, mini, micro), multiply pip values by lot count and include spread and commission costs for an accurate net ratio.',
+  // },
   {
     question: 'What is a good risk to reward ratio in trading?',
     answer:
       'A good risk to reward ratio in trading is typically 1 : 2 or 1 : 3 for swing and position trading. However, a good ratio depends on your win rate: at 1 : 2, you break even with a 33.3% win rate, whereas at 1 : 1, you need over 50%. A higher ratio provides a larger safety margin, but only if the profit target is realistic and regularly achieved.',
   },
-  {
-    question: 'What is the relationship between risk and reward in investing?',
-    answer:
-      'In investing, the relationship between risk and reward is directly proportional: higher potential returns generally require taking on higher risk, while lower-risk assets offer more modest returns. Investors balance this tradeoff by constructing diversified portfolios that match their financial goals and risk capacity.',
-  },
-  {
-    question: 'What is the relationship between risk and reward?',
-    answer:
-      'The relationship between risk and reward states that potential payout increases in tandem with the level of risk accepted. In trading, maintaining a favorable risk to reward ratio ensures that your average winning trade is significantly larger than your average losing trade, enabling long-term account growth even during losing streaks.',
-  },
+  // {
+  //   question: 'What is the relationship between risk and reward in investing?',
+  //   answer:
+  //     'In investing, the relationship between risk and reward is directly proportional: higher potential returns generally require taking on higher risk, while lower-risk assets offer more modest returns. Investors balance this tradeoff by constructing diversified portfolios that match their financial goals and risk capacity.',
+  // },
+  // {
+  //   question: 'What is the relationship between risk and reward?',
+  //   answer:
+  //     'The relationship between risk and reward states that potential payout increases in tandem with the level of risk accepted. In trading, maintaining a favorable risk to reward ratio ensures that your average winning trade is significantly larger than your average losing trade, enabling long-term account growth even during losing streaks.',
+  // },
   {
     question: 'Does this calculator include brokerage and taxes?',
     answer:
@@ -85,11 +80,11 @@ export const WIN_RATE_FAQS: Faq[] = [
     answer:
       'To improve your win rate in day trading, trade only in the direction of the dominant higher time frame trend, wait for key level confirmations, avoid over-trading during low volatility market sessions, use fixed risk management per trade (1-2% of account capital), and keep a detailed trade log to identify and refine your highest-probability setups.',
   },
-  {
-    question: 'What is expectancy in trading?',
-    answer:
-      'Expectancy is the average result of one trade over a long run: (Win Rate × Average Win) − (Loss Rate × Average Loss). A positive expectancy proves your trading strategy has a statistical edge and generates profit over time.',
-  },
+  // {
+  //   question: 'What is expectancy in trading?',
+  //   answer:
+  //     'Expectancy is the average result of one trade over a long run: (Win Rate × Average Win) − (Loss Rate × Average Loss). A positive expectancy proves your trading strategy has a statistical edge and generates profit over time.',
+  // },
   {
     question: 'How many trades before my win rate means anything?',
     answer:

@@ -1,5 +1,6 @@
 import { SITE } from '../data/site';
 import type { Faq } from '../data/faqs';
+import type { Article } from '../data/articles';
 
 /**
  * JSON-LD builders.
@@ -82,5 +83,50 @@ export function webSite(): Record<string, unknown> {
       name: SITE.name,
       url: origin,
     },
+  };
+}
+
+/** A single article page, described as a schema.org Article. */
+export function articleSchema(article: Article): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.title,
+    description: article.metaDescription,
+    keywords: article.keywords,
+    datePublished: article.datePublished,
+    author: {
+      '@type': 'Organization',
+      name: SITE.name,
+      url: origin,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: SITE.name,
+      url: origin,
+    },
+    url: absolute(`/articles/${article.slug}/`),
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': absolute(`/articles/${article.slug}/`),
+    },
+  };
+}
+
+/** Articles index page — described as an ItemList for AEO carousel eligibility. */
+export function articleListSchema(articles: Article[]): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Trading & Risk Management Articles',
+    description: 'In-depth guides on risk-reward, win rate, position sizing, and trading charges for Indian retail traders.',
+    url: absolute('/articles/'),
+    itemListElement: articles.map((article, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: article.title,
+      url: absolute(`/articles/${article.slug}/`),
+      description: article.metaDescription,
+    })),
   };
 }

@@ -9,6 +9,7 @@ import Card from '../components/ui/Card.astro';
 import DefinitionList from '../components/ui/DefinitionList.astro';
 import { getCalculator } from '../data/calculators';
 import { HOME_FAQS } from '../data/faqs';
+import { ARTICLES, CATEGORY_COLORS } from '../data/articles';
 import { RATES_VERIFIED_LABEL, getBroker } from '../lib/calc/charges';
 import { RR_DEFAULTS } from '../lib/calc/defaults';
 import { computeNet } from '../lib/calc/risk-reward';
@@ -111,14 +112,88 @@ const CHARGES = [
     </div>
   </section>
 
-
-    <Section
+  <Section
     id="calculators"
     title="Other calculators"
     lead="Same approach, different question."
     tone="surface"
   >
     <RelatedCalculators current="risk-reward" />
+  </Section>
+
+  <Section
+    id="articles"
+    title="Trading Articles"
+    lead="Numbers-first guides on risk management, charges, and trading psychology."
+    tone="surface"
+  >
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {ARTICLES.slice(0, 3).map((article) => {
+        const colors = CATEGORY_COLORS[article.category] ?? {
+          bg: 'bg-surface-2',
+          text: 'text-ink-subtle',
+        };
+        return (
+          <a
+            href={`/articles/${article.slug}/`}
+            class="panel block p-5 transition-colors duration-150 hover:border-hairline-strong hover:bg-surface-1 group"
+            aria-label={article.title}
+          >
+            <span
+              class:list={[
+                'inline-block px-2 py-0.5 rounded-xs text-caption font-semibold mb-3',
+                colors.bg,
+                colors.text,
+              ]}
+            >
+              {article.category}
+            </span>
+            <span class="block text-card-title text-ink group-hover:text-accent transition-colors duration-150">
+              {article.title}
+            </span>
+            <span class="mt-2 block text-body-sm text-ink-muted line-clamp-2">
+              {article.metaDescription}
+            </span>
+            <span class="mt-4 flex items-center gap-1 text-caption font-semibold text-accent">
+              Read article
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+                class="transition-transform duration-150 group-hover:translate-x-0.5"
+              >
+                <path
+                  d="M3 8h10M9 4l4 4-4 4"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+          </a>
+        );
+      })}
+    </div>
+    <div class="mt-4">
+      <a
+        href="/articles/"
+        class="inline-flex items-center gap-1.5 text-body-sm font-semibold text-accent hover:text-accent-hover transition-colors duration-150"
+      >
+        View all articles
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M3 8h10M9 4l4 4-4 4"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </a>
+    </div>
   </Section>
 
   <Section
@@ -150,161 +225,70 @@ const CHARGES = [
     </div>
   </Section>
 
-  <Section
-    id="charges"
-    title="Why charges change the answer"
-    tone="surface"
-    lead="A ratio that ignores costs describes a trade nobody actually places."
-  >
-    <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-8">
-      <div class="max-w-prose space-y-4 text-body text-ink-muted">
-        <p>
-          Costs move the ratio from both ends. When the target fills they come out of the profit;
-          when the stop is hit they are added on top of the loss. A setup that looks like 1 : 3 on a
-          chart is worth less than that by the time it clears your account, and the gap widens the
-          tighter your stop and target are.
-        </p>
-        <p>
-          That is why the trade is priced twice here. Most charges scale with turnover, and the
-          turnover at your target is not the turnover at your stop — selling {exitAtTarget} of stock
-          costs more than selling {exitAtStop}. Pricing the trade once and reusing that figure for
-          both outcomes is the common shortcut, and it makes the losing side look cheaper than it
-          is.
-        </p>
-        <p>
-          Every figure is an estimate built from published rate cards, last checked{' '}
-          {RATES_VERIFIED_LABEL}. Your contract note can still come out different: scrip group, the
-          number of orders your position fills in, and whether you carry it overnight all move the
-          total.
-        </p>
-      </div>
-
-      <Card title="What is priced in" headingLevel={3}>
-        <DefinitionList items={CHARGES} />
-      </Card>
-    </div>
-  </Section>
-
-  <Section
-    id="good-ratio"
-    title="What counts as a good ratio"
-    lead="A ratio only means something next to the win rate it demands. This is the trade-off, row by row."
-  >
-    <RatioTable />
-
-    <div class="mt-6 max-w-prose space-y-4 text-body text-ink-muted">
+  <Section 
+  id="charges" 
+  title="Why charges change the answer" 
+  tone="surface" 
+  lead="A ratio that ignores costs describes a trade nobody actually places." 
+>
+  <div class="grid w-full gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-start xl:gap-10">
+    <div class="w-full space-y-5 text-body leading-7 text-ink-muted">
       <p>
-        Widening a target always improves the ratio on paper, and it always lowers the odds of
-        getting there. Going from 1 : 2 to 1 : 3 buys you an eight-point cut in the win rate you
-        need — worth taking only if your actual hit rate falls by less than that. The honest test is
+        Costs move the ratio from both ends. When the target fills they come out of the profit; 
+        when the stop is hit they are added on top of the loss. A setup that looks like 1 : 3 on a 
+        chart is worth less than that by the time it clears your account, and the gap widens the 
+        tighter your stop and target are.
+      </p>
+
+      <p>
+        That is why the trade is priced twice here. Most charges scale with turnover, and the 
+        turnover at your target is not the turnover at your stop — selling {exitAtTarget} of stock 
+        costs more than selling {exitAtStop}. Pricing the trade once and reusing that figure for 
+        both outcomes is the common shortcut, and it makes the losing side look cheaper than it 
+        is.
+      </p>
+
+      <p>
+        Every figure is an estimate built from published rate cards, last checked{' '} 
+        {RATES_VERIFIED_LABEL}. Your contract note can still come out different: scrip group, the 
+        number of orders your position fills in, and whether you carry it overnight all move the 
+        total.
+      </p>
+    </div>
+
+    <Card title="What is priced in" headingLevel={3}>
+      <DefinitionList items={CHARGES} />
+    </Card>
+  </div>
+</Section>
+
+  <Section 
+  id="good-ratio" 
+  title="What counts as a good ratio" 
+  lead="A ratio only means something next to the win rate it demands. This is the trade-off, row by row." 
+> 
+  <div class="w-full">
+    <div class="w-full overflow-x-auto">
+      <div class="min-w-full">
+        <RatioTable />
+      </div>
+    </div>
+
+    <div class="mt-8 w-full space-y-5 px-0 text-body text-ink-muted sm:mt-10">
+      <p>
+        Widening a target always improves the ratio on paper, and it always lowers the odds of 
+        getting there. Going from 1 : 2 to 1 : 3 buys you an eight-point cut in the win rate you 
+        need — worth taking only if your actual hit rate falls by less than that. The honest test is 
         to run both versions of the same idea and compare the expectancy, not the ratio.
       </p>
+
       <p>
-        Anything below 1 : 1 deserves a hard look. You are staking more than the trade can return,
-        so a majority of winners is the minimum just to stay level, and one bad run erases a long
+        Anything below 1 : 1 deserves a hard look. You are staking more than the trade can return, 
+        so a majority of winners is the minimum just to stay level, and one bad run erases a long 
         stretch of small gains.
       </p>
     </div>
-  </Section>
-
-  <Section
-    id="guide"
-    title="Comprehensive Guide to Risk Reward, Win Rate & Stock Average Calculators"
-    lead="Master risk reward analysis, break-even win rate formulas, and stock cost averaging with our suite of free trading tools."
-    tone="surface"
-  >
-    <div class="max-w-prose space-y-8 text-body text-ink-muted">
-      <div class="space-y-4">
-        <h3 class="text-heading-md text-ink font-semibold">1. Complete Trading Calculator Suite for Stocks, Forex &amp; Crypto</h3>
-        <p>
-          Successful trading relies on precise risk management rather than guesswork. Whether you are trading equities,
-          executing <strong>forex Risk Reward</strong> strategies, or navigating volatile crypto markets, utilizing an online
-          <strong>trading calculator</strong> is essential to maintain long-term profitability. Our platform provides
-          <strong>trading tools free</strong> of cost, combining a powerful <strong>Risk Reward Calculator</strong>, a
-          precision <strong>Win Rate Calculator</strong>, and an intuitive <strong>Stock Average Calculator</strong>.
-        </p>
-        <p>
-          Whether you need a specialized <strong>risk reward calculator trading</strong> tool for equity markets, a
-          <strong>risk reward calculator forex</strong> setup with pip values, or a <strong>risk reward calculator crypto</strong>
-          utility for digital assets, our multi-market calculators deliver instant, reliable numbers. Active traders can also leverage
-          our built-in <strong>intraday trading calculator</strong> and integrated <strong>brokerage calculator</strong> to account for
-          friction costs before executing any trade.
-        </p>
-      </div>
-
-      <div class="space-y-4">
-        <h3 class="text-heading-md text-ink font-semibold">2. In-Depth Risk Reward Ratio Analysis &amp; Formulas</h3>
-        <p>
-          The <strong>Risk Reward Ratio</strong> measures the potential profit of a trade relative to the capital put at risk. Performing a rigorous
-          <strong>risk reward analysis</strong> before placing an entry order allows traders to filter out low-probability setups. By using a
-          dedicated <strong>risk reward ratio calculator</strong>, you can quickly evaluate your entry point, target price, and stop loss.
-        </p>
-        <p>
-          Many professional swing and day traders aim for a minimum <strong>1:3 risk reward ratio</strong> or 1:2 setup. Finding the
-          <strong>best risk reward ratio in trading</strong> depends on your trading strategy and market dynamics. Utilizing a
-          <strong>risk reward chart</strong> or checking our <strong>risk reward ratio table</strong> helps visualize how target distances compare against
-          stop distances. With <strong>free risk reward ratio trading</strong> tools, conducting a thorough <strong>risk reward assessment</strong>
-          becomes an effortless part of your daily trading routine.
-        </p>
-      </div>
-
-      <div class="space-y-4">
-        <h3 class="text-heading-md text-ink font-semibold">3. Calculating Risk Reward with Charges &amp; Brokerage</h3>
-        <p>
-          A common mistake among retail traders is ignoring trading fees. Evaluating <strong>Risk Reward with charges/brokerage</strong>
-          reveals the true net profitability of a position. Standard gross ratios can be misleading because brokerage fees, Securities Transaction Tax (STT),
-          GST, stamp duty, and exchange charges erode profit targets while increasing downside losses.
-        </p>
-        <p>
-          Our <strong>risk reward breakeven calculator</strong> and <strong>risk reward accuracy calculator</strong> calculate net risk and net reward independently.
-          Because turnover varies between target exits and stop exits, pricing both scenarios accurately ensures your calculation reflects realistic account equity after all execution costs.
-        </p>
-      </div>
-
-      <div class="space-y-4">
-        <h3 class="text-heading-md text-ink font-semibold">4. Win Rate Calculator &amp; Break-Even Win Rate Analysis</h3>
-        <p>
-          Understanding the relationship between <strong>risk reward and win rate</strong> is fundamental to building a winning trading system.
-          Our <strong>win rate calculator</strong> and <strong>risk reward and win rate calculator</strong> allow you to analyze your trading history
-          and determine if your system holds a positive statistical expectancy.
-        </p>
-        <p>
-          Traders frequently ask <strong>how to calculate win rate in trading</strong>. The standard <strong>win rate formula</strong> is:
-        </p>
-        <div class="p-4 bg-surface rounded-lg border border-hairline font-mono text-caption text-ink">
-          Win Rate (%) = (Number of Winning Trades ÷ Total Decided Trades) × 100
-        </div>
-        <p>
-          Knowing your historical hit rate allows you to use a <strong>win rate break even calculator</strong> to check your minimum required accuracy.
-          Whether analyzing <strong>win rate forex</strong> trades or stock positions, utilizing a <strong>win rate calculator trading</strong> module
-          and referring to a <strong>risk reward and win rate chart</strong> ensures you never trade below your strategy's break-even threshold.
-        </p>
-      </div>
-
-      <div class="space-y-4">
-        <h3 class="text-heading-md text-ink font-semibold">5. Stock Average Calculator &amp; Average Down Strategy</h3>
-        <p>
-          When managing equity portfolios or long-term investments, knowing <strong>what is stock average price</strong> is essential.
-          A <strong>stock average calculator</strong> aggregates multiple share purchases made at different prices into one single weighted average price per share.
-        </p>
-        <p>
-          Traders looking to lower their breakeven level often use a <strong>stock average down calculator</strong> to plan additional buys as prices drop.
-          Our <strong>stock average cost calculator</strong> and <strong>stock average price calculator</strong> use a precise
-          <strong>stock average formula calculator</strong> algorithm to show your exact average price and total outlay:
-        </p>
-        <div class="p-4 bg-surface rounded-lg border border-hairline font-mono text-caption text-ink">
-          Weighted Average Price = Sum of (Price × Quantity for each buy) ÷ Total Quantity Held
-        </div>
-        <p>
-          Using a combined <strong>stock average and profit calculator</strong> lets you track unrealized profit or loss against current market prices.
-          Whether accessing our site from desktop or mobile web browsers as the <strong>best stock average calculator app</strong> alternative,
-          you can plan target averages without risking unexpected capital drawdowns.
-        </p>
-      </div>
-    </div>
-  </Section>
-
-
-
+  </div>
+</Section>
   <FaqSection faqs={HOME_FAQS} title="Frequently Asked Questions" />
 </BaseLayout>

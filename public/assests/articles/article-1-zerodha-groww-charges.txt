@@ -1,0 +1,58 @@
+TITLE: The Zerodha & Groww Charges Trap: How STT Destroys Your 1:2 Risk-to-Reward
+SLUG: zerodha-groww-charges-stt-risk-reward
+META_TITLE: The Zerodha & Groww Charges Trap: Real Net Risk-to-Reward
+META_DESCRIPTION: Learn how STT, GST, brokerage, and exchange fees alter your 1:2 risk-to-reward ratio on Zerodha and Groww into a net loss.
+KEYWORDS: Zerodha hidden charges, Groww intraday brokerage, STT tax intraday, real risk to reward calculator, net P&L India
+CATEGORY: Indian Markets
+
+--- ARTICLE CONTENT ---
+
+Many Indian retail traders review their trading log at the end of the month, see ₹10,000 in gross profits, and wonder why their Demat account balance has dropped. The culprit is execution friction: the combination of brokerage, Securities Transaction Tax (STT), Exchange Turnover Fees, GST, and Stamp Duty.
+
+When trading through discount brokers like Zerodha, Groww, or Angel One, trading charts display gross risk-to-reward (R:R). They ignore statutory taxes that skew actual trade outcomes.
+
+TYPICAL TRADING CHART vs ACTUAL DEMAT ACCOUNT REALITY:
+Target: +₹2,000 (Gross)  --> Net Target: +₹1,910 (Net)
+Entry:  ₹100             --> Entry:  ₹100
+Stop:   -₹1,000 (Gross)  --> Net Stop:   -₹1,090 (Net)
+Apparent R:R = 1:2.0     --> True Net R:R = 1:1.75
+
+The Mathematical Proof: Gross vs. Net Risk-to-Reward
+
+A standard chart calculator computes risk-to-reward using raw price levels:
+Gross R:R = (Target Price - Entry Price) / (Entry Price - Stop Loss Price)
+
+To calculate True Net Risk-to-Reward, transaction charges must be factored into both execution legs:
+Net Risk = Gross Stop Loss + Buy Charges + Sell Charges (SL)
+Net Reward = Gross Target Profit - Buy Charges - Sell Charges (Target)
+Net R:R = Net Reward / Net Risk
+
+Case Study: A Standard Intraday Equity Trade
+
+Consider a trade taking 1,000 shares of an equity stock at ₹500 with a Stop Loss at ₹495 and a Target Price at ₹510.
+- Gross Risk: ₹5.00 per share * 1,000 = ₹5,000
+- Gross Reward: ₹10.00 per share * 1,000 = ₹10,000
+- Apparent R:R: 1:2.00
+
+Breakdown of Indian Regulatory Charges (Intraday Equity):
+1. Brokerage: Flat ₹20 or 0.03% (lower) per leg = ₹40.00
+2. STT (Securities Transaction Tax): 0.025% on Sell side only = ₹127.50 (Target Exit) / ₹123.75 (SL Exit)
+3. Exchange Turnover Fee (NSE): 0.00297% on total turnover = ₹30.00 (Target Exit) / ₹29.55 (SL Exit)
+4. GST: 18% on (Brokerage + Txn Fee + SEBI Fee) = ₹12.60 (Target Exit) / ₹12.52 (SL Exit)
+5. Stamp Duty: 0.003% on Buy side only = ₹15.00
+Total Transaction Friction: ₹225.10 (Target Exit) / ₹220.82 (SL Exit)
+
+The Real Net Outcome:
+- Actual Net Risk: ₹5,000 (Gross Risk) + ₹220.82 (Charges) = ₹5,220.82
+- Actual Net Reward: ₹10,000 (Gross Profit) - ₹225.10 (Charges) = ₹9,774.90
+- True Net Risk-to-Reward Ratio: 9,774.90 / 5,220.82 = 1:1.87
+
+On higher-frequency or lower-margin setups, friction is even more severe, often reducing theoretical 1:2 setups down to a net 1:1.3.
+
+--- FAQ SECTION ---
+
+Q: Why is STT charged differently on Intraday vs. Delivery equity trades in India?
+A: The Ministry of Finance levies Securities Transaction Tax (STT) based on holding duration. Equity Intraday trades incur 0.025% STT on the sell side only. Equity Delivery investments incur 0.1% STT on both buy and sell legs.
+
+Q: How do transaction charges affect the required break-even win rate?
+A: A theoretical 1:2 R:R requires a 33.33% win rate to break even. When transaction charges lower the net ratio to 1:1.5, the required break-even win rate increases to 40.0%.
