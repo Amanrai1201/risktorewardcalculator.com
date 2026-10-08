@@ -40,6 +40,18 @@ const FREE: BrokerageRule = { percent: 0, cap: null, min: 0, flat: null };
  * changes. Rates verified 2026-09-10 from each broker's published charge sheet.
  */
 export const BROKERS: Broker[] = [
+    {
+    id: 'groww',
+    name: 'Groww',
+    brokerage: {
+      'equity-delivery': { percent: 0.001, cap: 20, min: 5, flat: null },
+      'equity-intraday': { percent: 0.001, cap: 20, min: 5, flat: null },
+    },
+    dpCharge: 20,
+    dpChargeIncludesGst: false,
+    summary: '0.1% or ₹20 per order, whichever is lower, with a ₹5 minimum.',
+    sourceUrl: 'https://groww.in/pricing',
+  },
   {
     id: 'zerodha',
     name: 'Zerodha',
@@ -103,7 +115,7 @@ export const BROKERS: Broker[] = [
   },
 ];
 
-export const DEFAULT_BROKER_ID = 'zerodha';
+export const DEFAULT_BROKER_ID = 'groww';
 
 const BROKER_INDEX = new Map(BROKERS.map((broker) => [broker.id, broker]));
 

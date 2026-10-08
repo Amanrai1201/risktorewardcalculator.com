@@ -32,7 +32,46 @@ const rows = atTarget.lines.map((line) => ({
   title="Estimated charges"
   subtitle="Both legs of the round trip, priced twice."
 >
-  <div class="overflow-x-auto">
+  {/* Mobile: stacked card layout (no horizontal scroll) */}
+  <div class="sm:hidden space-y-3" data-charges-mobile>
+    {rows.map((row) => (
+      <div class="rounded-md border border-hairline bg-surface-1 p-3">
+        <p class="text-body-sm font-medium text-ink">
+          {row.label}
+          {row.note && (
+            <span class="block text-caption text-ink-subtle font-normal">{row.note}</span>
+          )}
+        </p>
+        <div class="mt-2 flex items-baseline justify-between gap-4 text-body-sm">
+          <span class="text-ink-muted">If target hits</span>
+          <span class="figures font-semibold text-ink">{formatMoney(row.amount, currency)}</span>
+        </div>
+        <div class="mt-1 flex items-baseline justify-between gap-4 text-body-sm">
+          <span class="text-ink-muted">If stop hits</span>
+          <span class="figures font-semibold text-ink">{formatMoney(row.atStop, currency)}</span>
+        </div>
+      </div>
+    ))}
+    {/* Total row for mobile */}
+    <div class="rounded-md border border-hairline-strong bg-surface-2 p-3">
+      <p class="text-body-sm font-semibold text-ink">Total estimated charges</p>
+      <div class="mt-2 flex items-baseline justify-between gap-4 text-body-sm">
+        <span class="text-ink-muted">If target hits</span>
+        <span class="figures font-semibold text-ink" data-field="totalAtTarget">
+          {formatMoney(atTarget.total, currency)}
+        </span>
+      </div>
+      <div class="mt-1 flex items-baseline justify-between gap-4 text-body-sm">
+        <span class="text-ink-muted">If stop hits</span>
+        <span class="figures font-semibold text-ink" data-field="totalAtStop">
+          {formatMoney(atStop.total, currency)}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  {/* sm+: full table */}
+  <div class="hidden sm:block overflow-x-auto">
     <table class="w-full min-w-[36rem] border-collapse text-body-sm">
       <caption class="sr-only">
         Estimated brokerage, taxes and fees for the round trip, shown for the target exit and the
